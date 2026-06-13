@@ -1,0 +1,501 @@
+#!/usr/bin/env node
+import { createHash } from 'node:crypto';
+import { existsSync } from 'node:fs';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import process from 'node:process';
+import JSZip from 'jszip';
+
+const ROOT_DIR = process.cwd();
+const DOCS_DIR = path.join(ROOT_DIR, 'docs');
+const WORLDS_DIR = path.join(DOCS_DIR, 'worlds');
+const SUBMISSIONS_DIR = path.join(ROOT_DIR, 'submissions');
+const SUMMARY_PATH = path.join(ROOT_DIR, '.publish-summary.md');
+
+const SCENE_SYNC_EXPORT_FORMAT = 'scene-sync-export-scene';
+const CATALOG_SCHEMA_VERSION = 1;
+const MIB = 1024 * 1024;
+const WARN_SINGLE_FILE_BYTES = 50 * MIB;
+const MAX_SINGLE_FILE_BYTES = 100 * MIB;
+const WARN_ZIP_BYTES = 100 * MIB;
+const WARN_TOTAL_BYTES = 250 * MIB;
+const WARN_FILE_COUNT = 1000;
+
+const args = new Set(process.argv.slice(2));
+const removeSubmissions = args.has('--remove-submissions');
+
+function formatBytes(bytes) {
+  if (!Number.isFinite(bytes)) return 'unknown size';
+  if (bytes >= MIB) return `${(bytes / MIB).toFixed(1)} MiB`;
+  if (bytes >= 1024) return `${(bytes / 1024).toFixed(1)} KiB`;
+  return `${bytes} B`;
+}
+
+function toVersionTimestamp(date = new Date()) {
+  return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+}
+
+function hashBuffer(buffer) {
+  return createHash('sha256').update(buffer).digest('hex');
+}
+
+function sanitizeSlug(input) {
+  const slug = String(input || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\.zip$/i, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 64)
+    .replace(/-+$/g, '');
+  return slug || null;
+}
+
+function titleizeSlug(slug) {
+  return String(slug || '')
+    .split('-')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+function parseListLine(value) {
+  return String(value || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function parsePrMetadata() {
+  const body = process.env.PR_BODY || '';
+  const titleMatch = body.match(/^Title:\s*(.+)$/im);
+  const descriptionMatch = body.match(/^Description:\s*(.+)$/im);
+  const tagsMatch = body.match(/^Tags:\s*(.+)$/im);
+  const slugMatch = body.match(/^Slug:\s*(.+)$/im);
+
+  return {
+    slug: slugMatch ? sanitizeSlug(slugMatch[1]) : null,
+    title: titleMatch ? titleMatch[1].trim() : '',
+    description: descriptionMatch ? descriptionMatch[1].trim() : '',
+    tags: tagsMatch ? parseListLine(tagsMatch[1]) : [],
+  };
+}
+
+function isPlainObject(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function isValidNumberArray(value, minLength) {
+  return Array.isArray(value)
+    && value.length >= minLength
+    && value.every((item) => typeof item === 'number' && Number.isFinite(item));
+}
+
+function isValidSceneDocument(doc) {
+  if (!isPlainObject(doc)) return false;
+  if (doc.format !== SCENE_SYNC_EXPORT_FORMAT) return false;
+  if (!Number.isInteger(doc.version)) return false;
+  if (!Array.isArray(doc.objects)) return false;
+  return doc.objects.every((obj) => (
+    isPlainObject(obj)
+    && typeof obj.id === 'string'
+    && isValidNumberArray(obj.position, 3)
+    && isValidNumberArray(obj.rotation, 4)
+    && isValidNumberArray(obj.scale, 3)
+  ));
+}
+
+function normalizeZipPath(name) {
+  if (typeof name !== 'string') return null;
+  if (!name || name.includes('\0') || name.includes('\\')) return null;
+  if (name.startsWith('/') || /^[A-Za-z]:/.test(name)) return null;
+  const trimmed = name.endsWith('/') ? name.slice(0, -1) : name;
+  if (!trimmed) return null;
+  const parts = trimmed.split('/');
+  if (parts.some((part) => !part || part === '.' || part === '..')) return null;
+  return trimmed;
+}
+
+function safeJoin(baseDir, relativePath) {
+  const target = path.resolve(baseDir, ...relativePath.split('/'));
+  const relative = path.relative(baseDir, target);
+  if (relative.startsWith('..') || path.isAbsolute(relative)) {
+    throw new Error(`Unsafe output path: ${relativePath}`);
+  }
+  return target;
+}
+
+async function readJsonFile(filePath, fallback) {
+  try {
+    const text = await fs.readFile(filePath, 'utf8');
+    return JSON.parse(text);
+  } catch (error) {
+    if (error.code === 'ENOENT') return fallback;
+    throw error;
+  }
+}
+
+async function writeJsonFile(filePath, value) {
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
+  await fs.writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
+}
+
+async function findSubmissionZips(dir = SUBMISSIONS_DIR) {
+  if (!existsSync(dir)) return [];
+  const results = [];
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...await findSubmissionZips(fullPath));
+    } else if (entry.isFile() && entry.name.toLowerCase().endsWith('.zip')) {
+      results.push(fullPath);
+    }
+  }
+  return results.sort();
+}
+
+function findThumbnailPath(zip) {
+  const candidates = [
+    'thumbnail.png',
+    'thumbnail.jpg',
+    'thumbnail.jpeg',
+    'thumbnail.webp',
+    'preview.png',
+    'preview.jpg',
+    'preview.jpeg',
+    'preview.webp',
+    'cover.png',
+    'cover.jpg',
+    'cover.jpeg',
+    'cover.webp',
+    'assets/thumbnail.png',
+    'assets/preview.png',
+    'assets/cover.png',
+  ];
+  return candidates.find((candidate) => zip.file(candidate)) || null;
+}
+
+function collectAssetCount(manifest) {
+  if (Array.isArray(manifest?.assets)) return manifest.assets.length;
+  if (Array.isArray(manifest?.assetManifest)) return manifest.assetManifest.length;
+  return null;
+}
+
+async function extractZipAsIs(zip, destinationDir) {
+  await fs.rm(destinationDir, { recursive: true, force: true });
+  await fs.mkdir(destinationDir, { recursive: true });
+
+  const files = Object.values(zip.files).filter((entry) => !entry.dir);
+  let totalUncompressedBytes = 0;
+  let largest = { path: null, bytes: 0 };
+
+  for (const entry of files) {
+    const safeName = normalizeZipPath(entry.name);
+    if (!safeName) throw new Error(`Unsafe ZIP entry path: ${entry.name}`);
+    const data = await entry.async('nodebuffer');
+    totalUncompressedBytes += data.byteLength;
+    if (data.byteLength > largest.bytes) largest = { path: safeName, bytes: data.byteLength };
+    if (data.byteLength > MAX_SINGLE_FILE_BYTES) {
+      throw new Error(`File exceeds 100 MiB limit: ${safeName} (${formatBytes(data.byteLength)})`);
+    }
+    const target = safeJoin(destinationDir, safeName);
+    await fs.mkdir(path.dirname(target), { recursive: true });
+    await fs.writeFile(target, data);
+  }
+
+  return { fileCount: files.length, totalUncompressedBytes, largest };
+}
+
+function buildWorldIndexHtml({ title, versionId }) {
+  const safeTitle = String(title || 'Scene Sync World')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+  const safeVersion = String(versionId || '').replace(/[^A-Za-z0-9_.-]/g, '');
+
+  return `<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${safeTitle}</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #101317;
+      color: #edf2f7;
+      font: 16px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main {
+      width: min(560px, calc(100% - 32px));
+      padding: 24px;
+      border: 1px solid #34404d;
+      border-radius: 8px;
+      background: #181e24;
+    }
+    a { color: #5cc8ff; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>${safeTitle}</h1>
+    <p id="status">Opening latest version...</p>
+    <p><a id="fallback" href="./versions/${safeVersion}/">Open latest version</a></p>
+  </main>
+  <script>
+    const statusEl = document.getElementById('status');
+    const fallbackEl = document.getElementById('fallback');
+    const params = new URLSearchParams(location.search);
+    const cacheKey = params.get('v') || Date.now();
+    fetch('./current.json?v=' + encodeURIComponent(cacheKey), { cache: 'no-store' })
+      .then((response) => {
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        return response.json();
+      })
+      .then((current) => {
+        const versionId = current && current.versionId;
+        if (!versionId) throw new Error('current.json does not include versionId');
+        const target = './versions/' + encodeURIComponent(versionId) + '/' + location.search + location.hash;
+        fallbackEl.href = target;
+        location.replace(target);
+      })
+      .catch((error) => {
+        statusEl.textContent = 'Failed to open latest version: ' + error.message;
+      });
+  </script>
+</body>
+</html>
+`;
+}
+
+async function updateCatalog(worldRecord) {
+  const catalogPath = path.join(DOCS_DIR, 'worlds.json');
+  const catalog = await readJsonFile(catalogPath, {
+    schemaVersion: CATALOG_SCHEMA_VERSION,
+    updatedAt: null,
+    worlds: [],
+  });
+  const worlds = Array.isArray(catalog.worlds) ? catalog.worlds : [];
+  const nextWorlds = worlds.filter((world) => world.slug !== worldRecord.slug);
+  nextWorlds.push(worldRecord);
+  nextWorlds.sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
+
+  await writeJsonFile(catalogPath, {
+    schemaVersion: CATALOG_SCHEMA_VERSION,
+    updatedAt: worldRecord.updatedAt,
+    worlds: nextWorlds,
+  });
+}
+
+async function pruneEmptyParents(startDir, stopDir) {
+  let current = startDir;
+  const stop = path.resolve(stopDir);
+  while (path.resolve(current).startsWith(stop) && path.resolve(current) !== stop) {
+    const entries = await fs.readdir(current).catch(() => null);
+    if (!entries || entries.length > 0) return;
+    await fs.rmdir(current);
+    current = path.dirname(current);
+  }
+}
+
+async function publishSubmission(zipPath, { timestamp, prMetadata, allowPrSlugOverride }) {
+  const warnings = [];
+  const zipBuffer = await fs.readFile(zipPath);
+  const zipHash = hashBuffer(zipBuffer);
+  const zipSize = zipBuffer.byteLength;
+  if (zipSize > WARN_ZIP_BYTES) {
+    warnings.push(`ZIP is large: ${formatBytes(zipSize)}`);
+  }
+
+  const zip = await JSZip.loadAsync(zipBuffer);
+  for (const entry of Object.values(zip.files)) {
+    if (!normalizeZipPath(entry.name)) {
+      throw new Error(`Unsafe ZIP entry path: ${entry.name}`);
+    }
+  }
+
+  const sceneEntry = zip.file('scene.json');
+  if (!sceneEntry) throw new Error('scene.json was not found at the ZIP root');
+  const sceneDocument = JSON.parse(await sceneEntry.async('string'));
+  if (!isValidSceneDocument(sceneDocument)) {
+    throw new Error('scene.json is not a valid Scene Sync Export document');
+  }
+
+  let manifest = null;
+  const manifestEntry = zip.file('manifest.json');
+  if (manifestEntry) {
+    manifest = JSON.parse(await manifestEntry.async('string'));
+  } else {
+    warnings.push('manifest.json was not found');
+  }
+
+  const fileSlug = sanitizeSlug(path.basename(zipPath));
+  const slug = allowPrSlugOverride && prMetadata.slug ? prMetadata.slug : fileSlug;
+  if (!slug) throw new Error(`Could not derive slug from ${path.basename(zipPath)}`);
+
+  const title = prMetadata.title
+    || sceneDocument.title
+    || manifest?.title
+    || titleizeSlug(slug);
+  const description = prMetadata.description
+    || sceneDocument.description
+    || manifest?.description
+    || '';
+  const tags = prMetadata.tags.length > 0
+    ? prMetadata.tags
+    : (Array.isArray(sceneDocument.tags) ? sceneDocument.tags : []);
+  const versionId = `${timestamp}-${zipHash.slice(0, 8)}`;
+  const worldDir = path.join(WORLDS_DIR, slug);
+  const versionDir = path.join(worldDir, 'versions', versionId);
+
+  const extraction = await extractZipAsIs(zip, versionDir);
+  if (extraction.fileCount > WARN_FILE_COUNT) {
+    warnings.push(`ZIP contains many files: ${extraction.fileCount}`);
+  }
+  if (extraction.totalUncompressedBytes > WARN_TOTAL_BYTES) {
+    warnings.push(`Expanded files are large: ${formatBytes(extraction.totalUncompressedBytes)}`);
+  }
+  if (extraction.largest.bytes > WARN_SINGLE_FILE_BYTES) {
+    warnings.push(`Largest file is ${formatBytes(extraction.largest.bytes)}: ${extraction.largest.path}`);
+  }
+
+  const thumbnailPath = findThumbnailPath(zip);
+  if (!thumbnailPath) warnings.push('No thumbnail image found');
+
+  const updatedAt = new Date().toISOString();
+  const current = {
+    schemaVersion: CATALOG_SCHEMA_VERSION,
+    slug,
+    title,
+    description,
+    tags,
+    versionId,
+    versionPath: `versions/${versionId}/`,
+    updatedAt,
+    zipSha256: zipHash,
+  };
+
+  await writeJsonFile(path.join(worldDir, 'current.json'), current);
+  await fs.writeFile(path.join(worldDir, 'index.html'), buildWorldIndexHtml({ title, versionId }), 'utf8');
+
+  const worldRecord = {
+    schemaVersion: CATALOG_SCHEMA_VERSION,
+    slug,
+    title,
+    description,
+    tags,
+    updatedAt,
+    versionId,
+    path: `worlds/${slug}/`,
+    versionPath: `worlds/${slug}/versions/${versionId}/`,
+    thumbnail: thumbnailPath ? `worlds/${slug}/versions/${versionId}/${thumbnailPath}` : null,
+    objectCount: sceneDocument.objects.length,
+    assetCount: collectAssetCount(manifest),
+    zipSize,
+    expandedSize: extraction.totalUncompressedBytes,
+    zipSha256: zipHash,
+    warnings,
+  };
+  await updateCatalog(worldRecord);
+
+  if (removeSubmissions) {
+    await fs.unlink(zipPath);
+    await pruneEmptyParents(path.dirname(zipPath), SUBMISSIONS_DIR);
+  }
+
+  return {
+    slug,
+    title,
+    versionId,
+    objectCount: sceneDocument.objects.length,
+    assetCount: collectAssetCount(manifest),
+    zipSize,
+    expandedSize: extraction.totalUncompressedBytes,
+    warnings,
+    urlPath: `docs/worlds/${slug}/versions/${versionId}/`,
+  };
+}
+
+async function writeSummary(results, failures) {
+  const lines = ['# Scene Sync submission publisher', ''];
+  if (results.length === 0 && failures.length === 0) {
+    lines.push('No submission ZIP files were found.');
+  }
+  for (const result of results) {
+    lines.push(`## ${result.title}`);
+    lines.push('');
+    lines.push(`- slug: \`${result.slug}\``);
+    lines.push(`- version: \`${result.versionId}\``);
+    lines.push(`- objects: ${result.objectCount}`);
+    if (result.assetCount !== null) lines.push(`- assets: ${result.assetCount}`);
+    lines.push(`- zip size: ${formatBytes(result.zipSize)}`);
+    lines.push(`- expanded size: ${formatBytes(result.expandedSize)}`);
+    lines.push(`- generated: \`${result.urlPath}\``);
+    if (result.warnings.length > 0) {
+      lines.push('- warnings:');
+      for (const warning of result.warnings) lines.push(`  - ${warning}`);
+    }
+    lines.push('');
+  }
+  for (const failure of failures) {
+    lines.push(`## Failed: ${failure.file}`);
+    lines.push('');
+    lines.push(failure.error);
+    lines.push('');
+  }
+  await fs.writeFile(SUMMARY_PATH, `${lines.join('\n')}\n`, 'utf8');
+}
+
+async function main() {
+  await fs.mkdir(DOCS_DIR, { recursive: true });
+  await fs.mkdir(WORLDS_DIR, { recursive: true });
+  const zipFiles = await findSubmissionZips();
+  const timestamp = toVersionTimestamp();
+  const prMetadata = parsePrMetadata();
+  const allowPrSlugOverride = zipFiles.length === 1;
+  const seenSlugs = new Set();
+  const results = [];
+  const failures = [];
+
+  for (const zipPath of zipFiles) {
+    try {
+      const fileSlug = sanitizeSlug(path.basename(zipPath));
+      const slug = allowPrSlugOverride && prMetadata.slug ? prMetadata.slug : fileSlug;
+      if (seenSlugs.has(slug)) throw new Error(`Duplicate slug in submissions: ${slug}`);
+      seenSlugs.add(slug);
+      results.push(await publishSubmission(zipPath, {
+        timestamp,
+        prMetadata,
+        allowPrSlugOverride,
+      }));
+    } catch (error) {
+      failures.push({
+        file: path.relative(ROOT_DIR, zipPath),
+        error: error.stack || error.message,
+      });
+    }
+  }
+
+  await writeSummary(results, failures);
+  if (failures.length > 0) {
+    for (const failure of failures) {
+      console.error(`Failed to publish ${failure.file}:`);
+      console.error(failure.error);
+    }
+    process.exitCode = 1;
+    return;
+  }
+
+  for (const result of results) {
+    console.log(`Published ${result.slug} ${result.versionId}`);
+    for (const warning of result.warnings) console.warn(`Warning: ${warning}`);
+  }
+  if (results.length === 0) console.log('No submission ZIP files were found.');
+}
+
+await main();

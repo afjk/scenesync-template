@@ -1,0 +1,77 @@
+name: Publish Scene Sync submission
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+    paths:
+      - 'submissions/*.zip'
+      - 'submissions/**/*.zip'
+      - 'scripts/publish-submissions.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/publish-submission.yml'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: publish-submission-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    name: Generate published world files
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name == github.repository
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Publish submission ZIPs
+        run: npm run publish:submissions -- --remove-submissions
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+
+      - name: Commit generated files
+        id: commit
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A docs
+          if git ls-files --error-unmatch submissions >/dev/null 2>&1 || [ -d submissions ]; then
+            git add -A submissions
+          fi
+          git commit -m "Publish Scene Sync submission"
+          git push origin "HEAD:${{ github.head_ref }}"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Comment summary
+        if: always() && hashFiles('.publish-summary.md') != ''
+        run: gh pr comment "$PR_NUMBER" --body-file .publish-summary.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
