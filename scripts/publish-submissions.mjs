@@ -20,6 +20,9 @@ const MAX_SINGLE_FILE_BYTES = 100 * MIB;
 const WARN_ZIP_BYTES = 100 * MIB;
 const WARN_TOTAL_BYTES = 250 * MIB;
 const WARN_FILE_COUNT = 1000;
+const THUMBNAIL_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.webp']);
+const METADATA_EXTENSIONS = new Set(['.md', '.markdown']);
+const GENERATED_THUMBNAIL_RE = /^thumbnail-[a-f0-9]{8}\.(png|jpe?g|webp)$/i;
 
 const args = new Set(process.argv.slice(2));
 const removeSubmissions = args.has('--remove-submissions');
@@ -81,6 +84,48 @@ function parsePrMetadata() {
   };
 }
 
+function parseMarkdownMetadata(text) {
+  const lines = String(text || '').replace(/\r\n/g, '\n').split('\n');
+  const descriptionLines = [];
+  let title = '';
+  let description = '';
+  let tags = [];
+
+  for (const line of lines) {
+    const titleMatch = line.match(/^Title:\s*(.+)$/i);
+    if (titleMatch) {
+      title = titleMatch[1].trim();
+      continue;
+    }
+
+    const descriptionMatch = line.match(/^Description:\s*(.+)$/i);
+    if (descriptionMatch) {
+      description = descriptionMatch[1].trim();
+      continue;
+    }
+
+    const tagsMatch = line.match(/^Tags:\s*(.+)$/i);
+    if (tagsMatch) {
+      tags = parseListLine(tagsMatch[1]);
+      continue;
+    }
+
+    const headingMatch = line.match(/^#\s+(.+)$/);
+    if (headingMatch && !title) {
+      title = headingMatch[1].trim();
+      continue;
+    }
+
+    descriptionLines.push(line);
+  }
+
+  if (!description) {
+    description = descriptionLines.join('\n').trim();
+  }
+
+  return { title, description, tags };
+}
+
 function isPlainObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
@@ -140,6 +185,23 @@ async function writeJsonFile(filePath, value) {
   await fs.writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
 }
 
+async function readCatalog() {
+  return await readJsonFile(path.join(DOCS_DIR, 'worlds.json'), {
+    schemaVersion: CATALOG_SCHEMA_VERSION,
+    updatedAt: null,
+    worlds: [],
+  });
+}
+
+async function writeCatalog(catalog) {
+  const worlds = Array.isArray(catalog.worlds) ? catalog.worlds : [];
+  await writeJsonFile(path.join(DOCS_DIR, 'worlds.json'), {
+    schemaVersion: CATALOG_SCHEMA_VERSION,
+    updatedAt: catalog.updatedAt || null,
+    worlds,
+  });
+}
+
 async function findSubmissionZips(dir = SUBMISSIONS_DIR) {
   if (!existsSync(dir)) return [];
   const results = [];
@@ -153,6 +215,54 @@ async function findSubmissionZips(dir = SUBMISSIONS_DIR) {
     }
   }
   return results.sort();
+}
+
+async function findSubmissionPatchFiles(dir = SUBMISSIONS_DIR) {
+  if (!existsSync(dir)) return [];
+  const results = [];
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...await findSubmissionPatchFiles(fullPath));
+      continue;
+    }
+    if (!entry.isFile()) continue;
+    const ext = path.extname(entry.name).toLowerCase();
+    if (THUMBNAIL_EXTENSIONS.has(ext)) {
+      results.push({ kind: 'thumbnail', path: fullPath });
+    } else if (METADATA_EXTENSIONS.has(ext)) {
+      results.push({ kind: 'metadata', path: fullPath });
+    }
+  }
+  return results.sort((a, b) => a.path.localeCompare(b.path));
+}
+
+function slugFromPatchFile(filePath) {
+  const relativePath = path.relative(SUBMISSIONS_DIR, filePath);
+  const parts = relativePath.split(path.sep).filter(Boolean);
+  const filename = parts[parts.length - 1] || '';
+  const basename = path.basename(filename, path.extname(filename));
+  const directorySlug = parts.length > 1 ? sanitizeSlug(parts[0]) : null;
+  const fileSlug = sanitizeSlug(basename);
+  const genericNames = new Set(['thumbnail', 'preview', 'cover', 'metadata', 'details', 'world']);
+  if (directorySlug && genericNames.has(String(fileSlug || '').toLowerCase())) {
+    return directorySlug;
+  }
+  return fileSlug;
+}
+
+function groupPatchFiles(files) {
+  const groups = new Map();
+  for (const file of files) {
+    const slug = slugFromPatchFile(file.path);
+    if (!slug) throw new Error(`Could not derive slug from ${path.relative(ROOT_DIR, file.path)}`);
+    const group = groups.get(slug) || { slug, metadataFiles: [], thumbnailFiles: [] };
+    if (file.kind === 'metadata') group.metadataFiles.push(file.path);
+    if (file.kind === 'thumbnail') group.thumbnailFiles.push(file.path);
+    groups.set(slug, group);
+  }
+  return [...groups.values()].sort((a, b) => a.slug.localeCompare(b.slug));
 }
 
 function findThumbnailPath(zip) {
@@ -274,18 +384,13 @@ function buildWorldIndexHtml({ title, versionId }) {
 }
 
 async function updateCatalog(worldRecord) {
-  const catalogPath = path.join(DOCS_DIR, 'worlds.json');
-  const catalog = await readJsonFile(catalogPath, {
-    schemaVersion: CATALOG_SCHEMA_VERSION,
-    updatedAt: null,
-    worlds: [],
-  });
+  const catalog = await readCatalog();
   const worlds = Array.isArray(catalog.worlds) ? catalog.worlds : [];
   const nextWorlds = worlds.filter((world) => world.slug !== worldRecord.slug);
   nextWorlds.push(worldRecord);
   nextWorlds.sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
 
-  await writeJsonFile(catalogPath, {
+  await writeCatalog({
     schemaVersion: CATALOG_SCHEMA_VERSION,
     updatedAt: worldRecord.updatedAt,
     worlds: nextWorlds,
@@ -409,6 +514,7 @@ async function publishSubmission(zipPath, { timestamp, prMetadata, allowPrSlugOv
   }
 
   return {
+    kind: 'publish',
     slug,
     title,
     versionId,
@@ -421,20 +527,161 @@ async function publishSubmission(zipPath, { timestamp, prMetadata, allowPrSlugOv
   };
 }
 
+async function removeGeneratedThumbnails(worldDir) {
+  const entries = await fs.readdir(worldDir, { withFileTypes: true }).catch(() => []);
+  await Promise.all(entries
+    .filter((entry) => entry.isFile() && GENERATED_THUMBNAIL_RE.test(entry.name))
+    .map((entry) => fs.unlink(path.join(worldDir, entry.name))));
+}
+
+async function readPatchMetadata(metadataFiles) {
+  if (metadataFiles.length === 0) return { title: '', description: '', tags: [] };
+  if (metadataFiles.length > 1) {
+    throw new Error(`Only one metadata file is allowed per slug: ${metadataFiles.map((file) => path.relative(ROOT_DIR, file)).join(', ')}`);
+  }
+  const text = await fs.readFile(metadataFiles[0], 'utf8');
+  return parseMarkdownMetadata(text);
+}
+
+async function writePatchThumbnail({ slug, thumbnailFiles, worldDir }) {
+  if (thumbnailFiles.length === 0) return null;
+  if (thumbnailFiles.length > 1) {
+    throw new Error(`Only one thumbnail file is allowed per slug: ${thumbnailFiles.map((file) => path.relative(ROOT_DIR, file)).join(', ')}`);
+  }
+
+  const thumbnailPath = thumbnailFiles[0];
+  const ext = path.extname(thumbnailPath).toLowerCase();
+  if (!THUMBNAIL_EXTENSIONS.has(ext)) {
+    throw new Error(`Unsupported thumbnail extension: ${path.relative(ROOT_DIR, thumbnailPath)}`);
+  }
+
+  const buffer = await fs.readFile(thumbnailPath);
+  if (buffer.byteLength > MAX_SINGLE_FILE_BYTES) {
+    throw new Error(`Thumbnail exceeds 100 MiB limit: ${path.relative(ROOT_DIR, thumbnailPath)} (${formatBytes(buffer.byteLength)})`);
+  }
+
+  const hash = hashBuffer(buffer).slice(0, 8);
+  const filename = `thumbnail-${hash}${ext}`;
+  await removeGeneratedThumbnails(worldDir);
+  await fs.writeFile(path.join(worldDir, filename), buffer);
+  return {
+    hash,
+    path: `worlds/${slug}/${filename}`,
+    size: buffer.byteLength,
+  };
+}
+
+function removeResolvedWarnings(warnings, { thumbnail }) {
+  const next = Array.isArray(warnings) ? warnings.slice() : [];
+  if (!thumbnail) return next;
+  return next.filter((warning) => warning !== 'No thumbnail image found');
+}
+
+async function applyPatchSubmission(group, { prMetadata, allowPrSlugOverride }) {
+  const slug = allowPrSlugOverride && prMetadata.slug ? prMetadata.slug : group.slug;
+  const worldDir = path.join(WORLDS_DIR, slug);
+  const currentPath = path.join(worldDir, 'current.json');
+  const current = await readJsonFile(currentPath, null);
+  if (!current) {
+    throw new Error(`World does not exist for metadata/thumbnail update: ${slug}`);
+  }
+
+  const catalog = await readCatalog();
+  const worlds = Array.isArray(catalog.worlds) ? catalog.worlds : [];
+  const existingRecord = worlds.find((world) => world.slug === slug);
+  if (!existingRecord) {
+    throw new Error(`World is missing from docs/worlds.json: ${slug}`);
+  }
+
+  const fileMetadata = await readPatchMetadata(group.metadataFiles);
+  const thumbnail = await writePatchThumbnail({
+    slug,
+    thumbnailFiles: group.thumbnailFiles,
+    worldDir,
+  });
+
+  const title = prMetadata.title || fileMetadata.title || existingRecord.title || current.title || titleizeSlug(slug);
+  const description = prMetadata.description || fileMetadata.description || existingRecord.description || current.description || '';
+  const tags = prMetadata.tags.length > 0
+    ? prMetadata.tags
+    : (fileMetadata.tags.length > 0
+      ? fileMetadata.tags
+      : (Array.isArray(existingRecord.tags) ? existingRecord.tags : []));
+  const updatedAt = new Date().toISOString();
+  const versionId = current.versionId || existingRecord.versionId;
+  if (!versionId) {
+    throw new Error(`World is missing current versionId: ${slug}`);
+  }
+
+  const nextCurrent = {
+    ...current,
+    title,
+    description,
+    tags,
+    updatedAt,
+  };
+  if (thumbnail) nextCurrent.thumbnail = thumbnail.path;
+
+  await writeJsonFile(currentPath, nextCurrent);
+  await fs.writeFile(path.join(worldDir, 'index.html'), buildWorldIndexHtml({ title, versionId }), 'utf8');
+
+  const nextRecord = {
+    ...existingRecord,
+    title,
+    description,
+    tags,
+    updatedAt,
+    thumbnail: thumbnail ? thumbnail.path : existingRecord.thumbnail,
+    warnings: removeResolvedWarnings(existingRecord.warnings, { thumbnail }),
+  };
+  await updateCatalog(nextRecord);
+
+  if (removeSubmissions) {
+    for (const filePath of [...group.metadataFiles, ...group.thumbnailFiles]) {
+      await fs.unlink(filePath);
+      await pruneEmptyParents(path.dirname(filePath), SUBMISSIONS_DIR);
+    }
+  }
+
+  const changed = [];
+  if (prMetadata.title || fileMetadata.title) changed.push('title');
+  if (prMetadata.description || fileMetadata.description) changed.push('description');
+  if (prMetadata.tags.length > 0 || fileMetadata.tags.length > 0) changed.push('tags');
+  if (thumbnail) changed.push('thumbnail');
+
+  return {
+    kind: 'patch',
+    slug,
+    title,
+    versionId,
+    warnings: nextRecord.warnings || [],
+    changed,
+    thumbnail,
+    urlPath: `docs/worlds/${slug}/`,
+  };
+}
+
 async function writeSummary(results, failures) {
   const lines = ['# Scene Sync submission publisher', ''];
   if (results.length === 0 && failures.length === 0) {
-    lines.push('No submission ZIP files were found.');
+    lines.push('No submission files were found.');
   }
   for (const result of results) {
     lines.push(`## ${result.title}`);
     lines.push('');
+    lines.push(`- action: ${result.kind === 'patch' ? 'updated metadata/thumbnail' : 'published ZIP'}`);
     lines.push(`- slug: \`${result.slug}\``);
-    lines.push(`- version: \`${result.versionId}\``);
-    lines.push(`- objects: ${result.objectCount}`);
-    if (result.assetCount !== null) lines.push(`- assets: ${result.assetCount}`);
-    lines.push(`- zip size: ${formatBytes(result.zipSize)}`);
-    lines.push(`- expanded size: ${formatBytes(result.expandedSize)}`);
+    if (result.versionId) lines.push(`- version: \`${result.versionId}\``);
+    if (Number.isFinite(result.objectCount)) lines.push(`- objects: ${result.objectCount}`);
+    if (result.assetCount !== null && result.assetCount !== undefined) lines.push(`- assets: ${result.assetCount}`);
+    if (Number.isFinite(result.zipSize)) lines.push(`- zip size: ${formatBytes(result.zipSize)}`);
+    if (Number.isFinite(result.expandedSize)) lines.push(`- expanded size: ${formatBytes(result.expandedSize)}`);
+    if (Array.isArray(result.changed) && result.changed.length > 0) {
+      lines.push(`- changed: ${result.changed.join(', ')}`);
+    }
+    if (result.thumbnail) {
+      lines.push(`- thumbnail: \`${result.thumbnail.path}\` (${formatBytes(result.thumbnail.size)})`);
+    }
     lines.push(`- generated: \`${result.urlPath}\``);
     if (result.warnings.length > 0) {
       lines.push('- warnings:');
@@ -455,19 +702,34 @@ async function main() {
   await fs.mkdir(DOCS_DIR, { recursive: true });
   await fs.mkdir(WORLDS_DIR, { recursive: true });
   const zipFiles = await findSubmissionZips();
+  const patchFiles = await findSubmissionPatchFiles();
   const timestamp = toVersionTimestamp();
   const prMetadata = parsePrMetadata();
-  const allowPrSlugOverride = zipFiles.length === 1;
-  const seenSlugs = new Set();
-  const results = [];
   const failures = [];
+  let patchGroups = [];
+  try {
+    patchGroups = groupPatchFiles(patchFiles);
+  } catch (error) {
+    failures.push({
+      file: 'submissions',
+      error: error.stack || error.message,
+    });
+  }
+
+  const inferredSlugs = new Set([
+    ...zipFiles.map((zipPath) => sanitizeSlug(path.basename(zipPath))).filter(Boolean),
+    ...patchGroups.map((group) => group.slug).filter(Boolean),
+  ]);
+  const allowPrSlugOverride = inferredSlugs.size === 1;
+  const seenZipSlugs = new Set();
+  const results = [];
 
   for (const zipPath of zipFiles) {
     try {
       const fileSlug = sanitizeSlug(path.basename(zipPath));
       const slug = allowPrSlugOverride && prMetadata.slug ? prMetadata.slug : fileSlug;
-      if (seenSlugs.has(slug)) throw new Error(`Duplicate slug in submissions: ${slug}`);
-      seenSlugs.add(slug);
+      if (seenZipSlugs.has(slug)) throw new Error(`Duplicate ZIP slug in submissions: ${slug}`);
+      seenZipSlugs.add(slug);
       results.push(await publishSubmission(zipPath, {
         timestamp,
         prMetadata,
@@ -476,6 +738,20 @@ async function main() {
     } catch (error) {
       failures.push({
         file: path.relative(ROOT_DIR, zipPath),
+        error: error.stack || error.message,
+      });
+    }
+  }
+
+  for (const group of patchGroups) {
+    try {
+      results.push(await applyPatchSubmission(group, {
+        prMetadata,
+        allowPrSlugOverride,
+      }));
+    } catch (error) {
+      failures.push({
+        file: group.slug,
         error: error.stack || error.message,
       });
     }
@@ -492,10 +768,10 @@ async function main() {
   }
 
   for (const result of results) {
-    console.log(`Published ${result.slug} ${result.versionId}`);
+    console.log(`${result.kind === 'patch' ? 'Updated' : 'Published'} ${result.slug} ${result.versionId || ''}`.trim());
     for (const warning of result.warnings) console.warn(`Warning: ${warning}`);
   }
-  if (results.length === 0) console.log('No submission ZIP files were found.');
+  if (results.length === 0) console.log('No submission files were found.');
 }
 
 await main();

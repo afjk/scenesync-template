@@ -35,7 +35,35 @@ Tags: gallery, glb, image
 Slug: neon-gallery
 ```
 
-`Slug:` is only honored when the PR contains a single submission ZIP.
+`Slug:` is only honored when the PR targets a single inferred slug.
+
+## Update Metadata or Thumbnail
+
+To update an existing world without uploading a new Export ZIP, create a pull
+request that adds files under `submissions/` with the existing world slug.
+
+```txt
+submissions/
+  my-room.png
+  my-room.md
+```
+
+Supported thumbnail extensions are `.png`, `.jpg`, `.jpeg`, and `.webp`.
+The publisher copies the image to `docs/worlds/<slug>/thumbnail-<hash>.<ext>`,
+updates `worlds.json`, and removes the submitted image from the PR.
+
+The Markdown file is optional and can contain:
+
+```md
+# My Room
+
+Short description shown on the template list.
+
+Tags: sample, room, glb
+```
+
+`Title:`, `Description:`, and `Tags:` lines in the PR body can also be used.
+PR body values override the Markdown file when both are present.
 
 ## Generated Layout
 
@@ -68,6 +96,8 @@ The publisher rejects:
 - unsafe ZIP paths such as absolute paths or `..`
 - any single file over 100 MiB
 - duplicate slugs in the same PR
+- metadata/thumbnail updates for a slug that does not exist yet
+- multiple metadata or thumbnail files for the same slug
 
 The publisher warns about:
 
