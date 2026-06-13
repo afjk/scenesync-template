@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scene Sync Export</title>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <link rel="stylesheet" href="viewer/viewer.css">
+  <script>
+    if (location.protocol === 'file:') {
+      window.addEventListener('DOMContentLoaded', function () {
+        var warning = document.getElementById('file-protocol-warning');
+        var loading = document.getElementById('loading-overlay');
+        if (warning) warning.classList.remove('hidden');
+        if (loading) loading.classList.add('hidden');
+      });
+    }
+  </script>
+</head>
+<body>
+  <canvas id="viewer-canvas"></canvas>
+  <div id="viewer-ui">
+    <div id="loading-overlay">Loading scene…</div>
+    <div id="file-protocol-warning" class="hidden">
+      <div>
+        <h1 style="font-size:20px;margin-bottom:12px;">このままでは表示できません</h1>
+        <p>
+          <code>index.html</code> を直接開くと、ブラウザの制限により
+          3Dモデルやシーンファイルを読み込めないことがあります。
+        </p>
+        <p style="margin-top:12px;font-size:14px;">
+          ZIPを展開したフォルダで、次のコマンドを実行してください。
+        </p>
+        <code style="margin-top:8px;display:inline-block;padding:4px 10px;background:rgba(255,255,255,.15);border-radius:4px;">python3 -m http.server 8080</code>
+        <p style="margin-top:12px;font-size:14px;">
+          そのあと、ブラウザで
+          <code style="padding:2px 6px;background:rgba(255,255,255,.15);border-radius:4px;">http://localhost:8080</code>
+          を開いてください。
+        </p>
+        <p style="margin-top:16px;font-size:14px;">
+          詳しくは <a href="./README.html" style="color:#8ab4ff;">README.html</a> を見てください。
+        </p>
+      </div>
+    </div>
+    <div id="missing-notice" class="hidden"></div>
+    <div id="viewer-title">Scene Sync Export</div>
+    <div id="viewer-controls"></div>
+  </div>
+  <script type="module" src="viewer/viewer.js"></script>
+</body>
+</html>

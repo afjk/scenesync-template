@@ -1,0 +1,50 @@
+{
+  "format": "scene-sync-export",
+  "version": 1,
+  "exportedAt": "2026-06-13T06:14:30.302Z",
+  "viewer": {
+    "entry": "index.html"
+  },
+  "assets": [
+    {
+      "id": "web-xggp8gwr",
+      "kind": "mesh",
+      "path": "assets/yugao.glb",
+      "status": "included",
+      "source": "blob"
+    },
+    {
+      "id": "img-4132ce29eb144edd",
+      "kind": "image",
+      "path": "assets/img-4132ce29eb144edd.png",
+      "status": "included"
+    },
+    {
+      "id": "glb-e69cadd7746e4417",
+      "kind": "mesh",
+      "path": "assets/glb-e69cadd7746e4417.glb",
+      "status": "included",
+      "source": "url"
+    },
+    {
+      "id": "glb-f87428aeef4142a1",
+      "kind": "mesh",
+      "path": "assets/glb-f87428aeef4142a1.glb",
+      "status": "included",
+      "source": "url"
+    },
+    {
+      "id": "skybox-outdoor_day",
+      "kind": "skybox",
+      "path": "assets/env.hdr",
+      "status": "included"
+    }
+  ],
+  "missingAssets": [],
+  "notes": [
+    "This is a read-only exported scene.",
+    "Editing and multi-user sync are not included.",
+    "Open through a local web server when previewing locally.",
+    "This initial export may require an internet connection to load viewer dependencies such as three.js, Three.js addons, Draco decoder, and JSZip from cdn.jsdelivr.net."
+  ]
+}

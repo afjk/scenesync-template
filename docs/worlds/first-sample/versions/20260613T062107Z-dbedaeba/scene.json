@@ -1,0 +1,339 @@
+{
+  "format": "scene-sync-export-scene",
+  "version": 2,
+  "units": "meters",
+  "loomletRuntime": {
+    "version": "0.1.2",
+    "graphVersion": "scene-sync-graph-json-v1",
+    "adapter": "scenesync"
+  },
+  "objects": [
+    {
+      "id": "web-xggp8gwr",
+      "name": "yugao.glb",
+      "asset": {
+        "type": "mesh",
+        "source": "carrier",
+        "path": "assets/yugao.glb",
+        "mime": "model/gltf-binary",
+        "visualBasis": null,
+        "originalName": "yugao.glb"
+      },
+      "position": [
+        1.5886420962524723,
+        -0.1481299996376033,
+        -1.1140576122811563
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.7719493709730947,
+        2.7719493709730947,
+        2.7719493709730947
+      ],
+      "visible": true
+    },
+    {
+      "id": "txt-085916a7008c4247",
+      "name": "text: clipboard.txt",
+      "asset": {
+        "type": "text",
+        "source": "inline",
+        "format": "plain",
+        "fontFamily": "system-sans",
+        "fontSize": 32,
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "color": "#ffffff",
+        "backgroundColor": "rgba(0,0,0,0.65)",
+        "align": "left",
+        "layout": {
+          "version": 1,
+          "width": 2.1315825288767627,
+          "height": 0.892480777135341,
+          "padding": 0.12,
+          "lineHeight": 1.35,
+          "mode": "scroll"
+        },
+        "scroll": {
+          "y": 0
+        },
+        "text": "Scene Syncで作られたシーンの\nサンプルです。"
+      },
+      "position": [
+        -2.070631853409783,
+        1.8129831945108454,
+        -4.9407291357304715
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "text-panel",
+        "accepts": [
+          "text"
+        ],
+        "placement": {
+          "surfaceKind": "unknown",
+          "normal": null
+        }
+      }
+    },
+    {
+      "id": "img-4132ce29eb144edd",
+      "name": "image: afjk.png",
+      "asset": {
+        "type": "image",
+        "source": "blob",
+        "url": "https://staging.afjk.jp/presence/blob/u43txkmf.png",
+        "path": "assets/img-4132ce29eb144edd.png",
+        "mime": "image/png",
+        "width": 400,
+        "height": 400
+      },
+      "position": [
+        -1.8143560598123327,
+        1.3500230221767122,
+        -4.759964574918966
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.4513542280622813,
+        0.4513542280622813,
+        0.4513542280622813
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "media-panel",
+        "accepts": [
+          "image",
+          "video"
+        ],
+        "fit": "contain",
+        "image": {
+          "originalWidth": 400,
+          "originalHeight": 400,
+          "textureWidth": 400,
+          "textureHeight": 400,
+          "originalBytes": 315948,
+          "maxPixel": 2048,
+          "optimized": false
+        },
+        "placement": {
+          "surfaceKind": "wall",
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "id": "glb-e69cadd7746e4417",
+      "name": "Fox.glb",
+      "asset": {
+        "type": "mesh",
+        "source": "url",
+        "path": "assets/glb-e69cadd7746e4417.glb",
+        "mime": "model/gltf-binary",
+        "visualBasis": null,
+        "originalName": null
+      },
+      "position": [
+        -3.748725460047503,
+        0,
+        -1.2652429651353134
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.015795599011916257,
+        0.015795599011916257,
+        0.015795599011916257
+      ],
+      "visible": true,
+      "animation": {
+        "enabled": true,
+        "clip": 0,
+        "mode": "loop",
+        "speed": 1,
+        "clipName": "Survey",
+        "offset": 0
+      }
+    },
+    {
+      "id": "glb-f87428aeef4142a1",
+      "name": "Duck.glb",
+      "asset": {
+        "type": "mesh",
+        "source": "url",
+        "path": "assets/glb-f87428aeef4142a1.glb",
+        "mime": "model/gltf-binary",
+        "visualBasis": null,
+        "originalName": null
+      },
+      "position": [
+        -0.770796377302533,
+        0,
+        -3.5095146637977876
+      ],
+      "rotation": [
+        0,
+        -0.2745410595704836,
+        0,
+        0.9615753774977374
+      ],
+      "scale": [
+        0.4034350340271329,
+        0.4034350340271329,
+        0.4034350340271329
+      ],
+      "visible": true
+    },
+    {
+      "id": "txt-2ed10d51cf1c44ca",
+      "name": "text: clipboard.txt",
+      "asset": {
+        "type": "text",
+        "source": "inline",
+        "format": "plain",
+        "fontFamily": "system-sans",
+        "fontSize": 32,
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "color": "#ffffff",
+        "backgroundColor": "rgba(0,0,0,0.65)",
+        "align": "left",
+        "layout": {
+          "version": 1,
+          "width": 2.4,
+          "height": 0.35,
+          "padding": 0.12,
+          "lineHeight": 1.35,
+          "mode": "scroll"
+        },
+        "scroll": {
+          "y": 0
+        },
+        "text": "\"https://github.com/KhronosGroup/glTF-Sample-Models/blob/main/2.0/Duck/glTF-Binary/Duck.glb\""
+      },
+      "position": [
+        0.8816642222259357,
+        0.43123095819661184,
+        -3.509865477599236
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "text-panel",
+        "accepts": [
+          "text"
+        ],
+        "placement": {
+          "surfaceKind": "unknown",
+          "normal": null
+        }
+      }
+    },
+    {
+      "id": "txt-0ab448b82d5e49ae",
+      "name": "text: clipboard.txt",
+      "asset": {
+        "type": "text",
+        "source": "inline",
+        "format": "plain",
+        "fontFamily": "system-sans",
+        "fontSize": 32,
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "color": "#ffffff",
+        "backgroundColor": "rgba(0,0,0,0.65)",
+        "align": "left",
+        "layout": {
+          "version": 1,
+          "width": 2.4,
+          "height": 0.35,
+          "padding": 0.12,
+          "lineHeight": 1.35,
+          "mode": "scroll"
+        },
+        "scroll": {
+          "y": 0
+        },
+        "text": "\"https://github.com/KhronosGroup/glTF-Sample-Models/blob/main/2.0/Fox/glTF-Binary/Fox.glb\""
+      },
+      "position": [
+        -5.569299594131566,
+        -4.440892098500626e-16,
+        -1.027859906781086
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "text-panel",
+        "accepts": [
+          "text"
+        ],
+        "placement": {
+          "surfaceKind": "unknown",
+          "normal": null
+        }
+      }
+    }
+  ],
+  "skybox": {
+    "type": "env",
+    "envId": "outdoor_day",
+    "asset": {
+      "path": "assets/env.hdr"
+    }
+  },
+  "bgm": null,
+  "behaviors": {
+    "scene": null,
+    "objects": {}
+  }
+}
