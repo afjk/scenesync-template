@@ -68,7 +68,7 @@ jobs:
             git add -A submissions
           fi
           git commit -m "Publish Scene Sync submission"
-          git push
+          git push origin "HEAD:${{ github.head_ref }}"
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Comment summary

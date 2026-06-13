@@ -2,6 +2,10 @@
 
 Scene Sync Export ZIP files are published here as playable GitHub Pages worlds.
 
+## Enable GitHub Pages
+
+Repository Settings -> Pages -> Build and deployment -> Source: GitHub Actions
+
 ## Publish a World
 
 Create a pull request that adds one or more ZIP files under `submissions/`.
