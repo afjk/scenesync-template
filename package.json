@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node --check scripts/publish-submissions.mjs",
+    "check": "node --check scripts/publish-submissions.mjs && node --check scripts/publish-submissions.test.mjs",
+    "test": "node --test scripts/publish-submissions.test.mjs",
     "publish:submissions": "node scripts/publish-submissions.mjs"
   },
   "dependencies": {
