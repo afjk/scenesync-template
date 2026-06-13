@@ -27,9 +27,7 @@ jobs:
   publish:
     name: Generate published world files
     runs-on: ubuntu-latest
-    if: >-
-      github.actor == 'afjk' &&
-      github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event.pull_request.head.repo.full_name == github.repository
 
     steps:
       - name: Checkout PR branch
