@@ -1,0 +1,16 @@
+{
+  "name": "scenesync-template",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check scripts/publish-submissions.mjs",
+    "publish:submissions": "node scripts/publish-submissions.mjs"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

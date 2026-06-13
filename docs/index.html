@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scene Sync Templates</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="page">
+    <header class="site-header">
+      <h1 class="site-title">Scene Sync Templates</h1>
+      <p class="site-copy">
+        Scene Syncで作成されたサンプル・テンプレート作品を公開しています。
+      </p>
+    </header>
+
+    <section class="toolbar" aria-label="World list summary">
+      <div class="count" id="world-count">Loading worlds...</div>
+    </section>
+
+    <section id="world-grid" class="grid" aria-live="polite"></section>
+  </main>
+
+  <script type="module">
+    const grid = document.getElementById('world-grid');
+    const count = document.getElementById('world-count');
+
+    function escapeText(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      }[char]));
+    }
+
+    function formatDate(value) {
+      if (!value) return '';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return '';
+      return date.toLocaleString('ja-JP', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    }
+
+    function renderWorld(world) {
+      const href = `${world.path || `worlds/${world.slug}/`}?v=${encodeURIComponent(world.versionId || world.updatedAt || Date.now())}`;
+      const tags = Array.isArray(world.tags) ? world.tags.slice(0, 4) : [];
+      const thumbnail = world.thumbnail
+        ? `<img src="${escapeText(world.thumbnail)}" alt="">`
+        : '<div class="placeholder">No thumbnail</div>';
+      const meta = [
+        formatDate(world.updatedAt),
+        Number.isFinite(world.objectCount) ? `${world.objectCount} objects` : '',
+      ].filter(Boolean);
+
+      return `
+        <a class="world-card" href="${escapeText(href)}">
+          <div class="thumb">${thumbnail}</div>
+          <div>
+            <h2 class="world-title">${escapeText(world.title || world.slug)}</h2>
+            <p class="world-description">${escapeText(world.description || '')}</p>
+          </div>
+          <div class="meta">
+            ${meta.map((item) => `<span>${escapeText(item)}</span>`).join('')}
+            ${tags.map((tag) => `<span class="tag">${escapeText(tag)}</span>`).join('')}
+          </div>
+        </a>
+      `;
+    }
+
+    try {
+      const response = await fetch(`./worlds.json?v=${Date.now()}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const catalog = await response.json();
+      const worlds = Array.isArray(catalog.worlds) ? catalog.worlds : [];
+      count.textContent = worlds.length === 1 ? '1 world' : `${worlds.length} worlds`;
+      grid.innerHTML = worlds.length
+        ? worlds.map(renderWorld).join('')
+        : '<div class="empty">No worlds have been published yet.</div>';
+    } catch (error) {
+      count.textContent = 'Failed to load worlds';
+      grid.innerHTML = `<div class="error">${escapeText(error.message)}</div>`;
+    }
+  </script>
+</body>
+</html>
