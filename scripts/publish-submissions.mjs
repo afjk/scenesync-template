@@ -84,6 +84,15 @@ function parsePrMetadata() {
   };
 }
 
+function emptyPrMetadata() {
+  return {
+    slug: null,
+    title: '',
+    description: '',
+    tags: [],
+  };
+}
+
 function parseMarkdownMetadata(text) {
   const lines = String(text || '').replace(/\r\n/g, '\n').split('\n');
   const descriptionLines = [];
@@ -124,6 +133,33 @@ function parseMarkdownMetadata(text) {
   }
 
   return { title, description, tags };
+}
+
+function isSupportedImageBuffer(buffer, ext) {
+  const normalizedExt = String(ext || '').toLowerCase();
+  if (normalizedExt === '.png') {
+    return buffer.length >= 8
+      && buffer[0] === 0x89
+      && buffer[1] === 0x50
+      && buffer[2] === 0x4e
+      && buffer[3] === 0x47
+      && buffer[4] === 0x0d
+      && buffer[5] === 0x0a
+      && buffer[6] === 0x1a
+      && buffer[7] === 0x0a;
+  }
+  if (normalizedExt === '.jpg' || normalizedExt === '.jpeg') {
+    return buffer.length >= 3
+      && buffer[0] === 0xff
+      && buffer[1] === 0xd8
+      && buffer[2] === 0xff;
+  }
+  if (normalizedExt === '.webp') {
+    return buffer.length >= 12
+      && buffer.toString('ascii', 0, 4) === 'RIFF'
+      && buffer.toString('ascii', 8, 12) === 'WEBP';
+  }
+  return false;
 }
 
 function isPlainObject(value) {
@@ -559,6 +595,9 @@ async function writePatchThumbnail({ slug, thumbnailFiles, worldDir }) {
   if (buffer.byteLength > MAX_SINGLE_FILE_BYTES) {
     throw new Error(`Thumbnail exceeds 100 MiB limit: ${path.relative(ROOT_DIR, thumbnailPath)} (${formatBytes(buffer.byteLength)})`);
   }
+  if (!isSupportedImageBuffer(buffer, ext)) {
+    throw new Error(`Thumbnail does not look like a valid ${ext.slice(1).toUpperCase()} file: ${path.relative(ROOT_DIR, thumbnailPath)}`);
+  }
 
   const hash = hashBuffer(buffer).slice(0, 8);
   const filename = `thumbnail-${hash}${ext}`;
@@ -662,10 +701,9 @@ async function applyPatchSubmission(group, { prMetadata, allowPrSlugOverride }) 
 }
 
 async function writeSummary(results, failures) {
+  if (results.length === 0 && failures.length === 0) return;
+
   const lines = ['# Scene Sync submission publisher', ''];
-  if (results.length === 0 && failures.length === 0) {
-    lines.push('No submission files were found.');
-  }
   for (const result of results) {
     lines.push(`## ${result.title}`);
     lines.push('');
@@ -699,6 +737,7 @@ async function writeSummary(results, failures) {
 }
 
 async function main() {
+  await fs.rm(SUMMARY_PATH, { force: true });
   await fs.mkdir(DOCS_DIR, { recursive: true });
   await fs.mkdir(WORLDS_DIR, { recursive: true });
   const zipFiles = await findSubmissionZips();
@@ -720,20 +759,21 @@ async function main() {
     ...zipFiles.map((zipPath) => sanitizeSlug(path.basename(zipPath))).filter(Boolean),
     ...patchGroups.map((group) => group.slug).filter(Boolean),
   ]);
-  const allowPrSlugOverride = inferredSlugs.size === 1;
+  const allowPrMetadataOverride = inferredSlugs.size === 1;
+  const scopedPrMetadata = allowPrMetadataOverride ? prMetadata : emptyPrMetadata();
   const seenZipSlugs = new Set();
   const results = [];
 
   for (const zipPath of zipFiles) {
     try {
       const fileSlug = sanitizeSlug(path.basename(zipPath));
-      const slug = allowPrSlugOverride && prMetadata.slug ? prMetadata.slug : fileSlug;
+      const slug = allowPrMetadataOverride && scopedPrMetadata.slug ? scopedPrMetadata.slug : fileSlug;
       if (seenZipSlugs.has(slug)) throw new Error(`Duplicate ZIP slug in submissions: ${slug}`);
       seenZipSlugs.add(slug);
       results.push(await publishSubmission(zipPath, {
         timestamp,
-        prMetadata,
-        allowPrSlugOverride,
+        prMetadata: scopedPrMetadata,
+        allowPrSlugOverride: allowPrMetadataOverride,
       }));
     } catch (error) {
       failures.push({
@@ -746,8 +786,8 @@ async function main() {
   for (const group of patchGroups) {
     try {
       results.push(await applyPatchSubmission(group, {
-        prMetadata,
-        allowPrSlugOverride,
+        prMetadata: scopedPrMetadata,
+        allowPrSlugOverride: allowPrMetadataOverride,
       }));
     } catch (error) {
       failures.push({

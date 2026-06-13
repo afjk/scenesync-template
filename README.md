@@ -62,8 +62,9 @@ Short description shown on the template list.
 Tags: sample, room, glb
 ```
 
-`Title:`, `Description:`, and `Tags:` lines in the PR body can also be used.
-PR body values override the Markdown file when both are present.
+`Title:`, `Description:`, `Tags:`, and `Slug:` lines in the PR body are only
+honored when the PR targets a single inferred slug. PR body values override the
+Markdown file when both are present.
 
 ## Generated Layout
 
