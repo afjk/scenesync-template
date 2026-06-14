@@ -2,6 +2,8 @@
 
 Scene Sync Export ZIP files are published here as playable GitHub Pages worlds.
 
+https://afjk.github.io/scenesync-template/
+
 ## Enable GitHub Pages
 
 Repository Settings -> Pages -> Build and deployment -> Source: GitHub Actions
