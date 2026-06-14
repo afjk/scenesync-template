@@ -1,0 +1,16 @@
+{
+  "format": "scene-sync-export",
+  "version": 1,
+  "exportedAt": "2026-06-14T15:07:00.079Z",
+  "viewer": {
+    "entry": "index.html"
+  },
+  "assets": [],
+  "missingAssets": [],
+  "notes": [
+    "This is a read-only exported scene.",
+    "Editing and multi-user sync are not included.",
+    "Open through a local web server when previewing locally.",
+    "This initial export may require an internet connection to load viewer dependencies such as three.js, Three.js addons, Draco decoder, and JSZip from cdn.jsdelivr.net."
+  ]
+}
