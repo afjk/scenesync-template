@@ -259,7 +259,15 @@ function wrapTextForSvg(text, maxChars = 28, maxLines = 3) {
     const current = lines[lines.length - 1] || '';
     const next = current ? `${current} ${word}` : word;
     if (!current) {
-      lines.push(next);
+      if (word.length <= maxChars) {
+        lines.push(word);
+      } else {
+        for (let index = 0; index < word.length && lines.length < maxLines; index += maxChars) {
+          lines.push(word.slice(index, index + maxChars));
+        }
+      }
+      if (lines.length >= maxLines) break;
+      continue;
     } else if (next.length <= maxChars) {
       lines[lines.length - 1] = next;
     } else if (word.length <= maxChars) {

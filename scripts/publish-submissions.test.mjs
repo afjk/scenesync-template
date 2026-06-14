@@ -76,12 +76,13 @@ async function createExistingWorld(root, slug, overrides = {}) {
   return record;
 }
 
-async function createSceneZip({ thumbnail = false, richScene = false } = {}) {
+async function createSceneZip({ thumbnail = false, richScene = false, title = null } = {}) {
   const zip = new JSZip();
   zip.file('index.html', '<!doctype html><title>Scene</title>');
   zip.file('scene.json', JSON.stringify({
     format: 'scene-sync-export-scene',
     version: 2,
+    ...(title ? { title } : {}),
     objects: [
       {
         id: 'box-1',
@@ -239,6 +240,22 @@ test('publishes generated description, tags, and fallback SVG thumbnail for ZIPs
   await fs.access(path.join(root, 'docs', world.thumbnail));
   const current = await readJson(path.join(root, 'docs/worlds/generated-room/current.json'));
   equal(current.thumbnail, world.thumbnail);
+});
+
+test('fallback SVG wraps long unspaced titles', async () => {
+  const root = await createTempProject();
+  const title = 'これはとても長いSceneSyncの日本語タイトルですこれはさらに長いです';
+  await fs.writeFile(path.join(root, 'submissions/japanese-title.zip'), await createSceneZip({ title }));
+
+  await runPublisher(root);
+
+  const catalog = await readJson(path.join(root, 'docs/worlds.json'));
+  const world = catalog.worlds.find((entry) => entry.slug === 'japanese-title');
+  match(world.thumbnail, /^worlds\/japanese-title\/thumbnail-[a-f0-9]{8}\.svg$/);
+  const svg = await fs.readFile(path.join(root, 'docs', world.thumbnail), 'utf8');
+  const titleLines = [...svg.matchAll(/font-size="72"[^>]*>(.*?)<\/text>/g)].map((matchResult) => matchResult[1]);
+  ok(titleLines.length > 1);
+  ok(titleLines.every((line) => line.length <= 28 || line.endsWith('…')));
 });
 
 test('uses ZIP thumbnail before publisher fallback thumbnail', async () => {
