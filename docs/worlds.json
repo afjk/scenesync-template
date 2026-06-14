@@ -1,7 +1,27 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-06-13T06:21:07.397Z",
+  "updatedAt": "2026-06-14T15:50:32.540Z",
   "worlds": [
+    {
+      "schemaVersion": 1,
+      "slug": "physics-demo-pyramid",
+      "title": "Rapier Cube Pyramid Demo",
+      "description": "",
+      "tags": [],
+      "updatedAt": "2026-06-14T15:50:32.540Z",
+      "versionId": "20260614T155032Z-39964db6",
+      "path": "worlds/physics-demo-pyramid/",
+      "versionPath": "worlds/physics-demo-pyramid/versions/20260614T155032Z-39964db6/",
+      "thumbnail": null,
+      "objectCount": 388,
+      "assetCount": 0,
+      "zipSize": 891742,
+      "expandedSize": 2857039,
+      "zipSha256": "39964db658130eb06bc337b926f202c48ed3c27b8e531f44edbb2a433513e9ed",
+      "warnings": [
+        "No thumbnail image found"
+      ]
+    },
     {
       "schemaVersion": 1,
       "slug": "first-sample",
