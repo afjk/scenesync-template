@@ -19,8 +19,10 @@ submissions/
 
 That is the only required input. The `Publish Scene Sync submission` workflow
 validates each ZIP, expands it as-is into `docs/worlds/<slug>/versions/<version>/`,
-updates `docs/worlds.json`, updates `current.json`, removes the submitted ZIP
-from the PR, and commits the generated files back to the same PR branch.
+generates a description/tags from the Scene Sync scene when needed, generates a
+fallback title-card thumbnail when the ZIP has no thumbnail, updates
+`docs/worlds.json`, updates `current.json`, removes the submitted ZIP from the
+PR, and commits the generated files back to the same PR branch.
 
 The slug is derived from the ZIP filename:
 
@@ -108,7 +110,7 @@ The publisher warns about:
 - ZIPs over 100 MiB
 - expanded contents over 250 MiB
 - more than 1000 files
-- missing thumbnails
+- missing thumbnails only if fallback thumbnail generation fails
 
 ## Local Check
 

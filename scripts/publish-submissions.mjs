@@ -22,7 +22,7 @@ const WARN_TOTAL_BYTES = 250 * MIB;
 const WARN_FILE_COUNT = 1000;
 const THUMBNAIL_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.webp']);
 const METADATA_EXTENSIONS = new Set(['.md', '.markdown']);
-const GENERATED_THUMBNAIL_RE = /^thumbnail-[a-f0-9]{8}\.(png|jpe?g|webp)$/i;
+const GENERATED_THUMBNAIL_RE = /^thumbnail-[a-f0-9]{8}\.(png|jpe?g|webp|svg)$/i;
 
 const args = new Set(process.argv.slice(2));
 const removeSubmissions = args.has('--remove-submissions');
@@ -60,6 +60,11 @@ function titleizeSlug(slug) {
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
+}
+
+function normalizeText(value, fallback = '') {
+  const text = String(value ?? '').replace(/\s+/g, ' ').trim();
+  return text || fallback;
 }
 
 function parseListLine(value) {
@@ -160,6 +165,163 @@ function isSupportedImageBuffer(buffer, ext) {
       && buffer.toString('ascii', 8, 12) === 'WEBP';
   }
   return false;
+}
+
+function collectSceneStats(sceneDocument = {}) {
+  const objects = Array.isArray(sceneDocument.objects) ? sceneDocument.objects : [];
+  const stats = {
+    objects: objects.length,
+    images: 0,
+    videos: 0,
+    audios: sceneDocument.bgm ? 1 : 0,
+    texts: 0,
+    glbs: 0,
+    loomlets: sceneDocument.behaviors ? 1 : 0,
+    physics: 0,
+  };
+
+  for (const obj of objects) {
+    const type = obj?.asset?.type;
+    if (type === 'image') stats.images += 1;
+    else if (type === 'video') stats.videos += 1;
+    else if (type === 'text') stats.texts += 1;
+    else if (type === 'mesh') stats.glbs += 1;
+
+    if (obj?.audioSources && typeof obj.audioSources === 'object' && !Array.isArray(obj.audioSources)) {
+      stats.audios += Object.keys(obj.audioSources).length;
+    }
+    if (obj?.physics?.enabled) stats.physics += 1;
+  }
+
+  return stats;
+}
+
+function generateSceneDescription(stats = {}) {
+  const parts = [];
+  if (stats.glbs > 0) parts.push(`3Dモデル${stats.glbs}個`);
+  if (stats.images > 0) parts.push(`画像${stats.images}個`);
+  if (stats.videos > 0) parts.push(`動画${stats.videos}個`);
+  if (stats.audios > 0) parts.push(`音声${stats.audios}個`);
+  if (stats.texts > 0) parts.push(`テキスト${stats.texts}個`);
+  if (stats.loomlets > 0) parts.push(`インタラクション${stats.loomlets}個`);
+  if (stats.physics > 0) parts.push(`物理オブジェクト${stats.physics}個`);
+  if (parts.length === 0) return 'Scene Syncで作成された3Dワールドです。';
+  return `${parts.join('、')}を含むScene Syncワールドです。`;
+}
+
+function generateSceneTags(stats = {}) {
+  const tags = ['scene-sync'];
+  if (stats.glbs > 0) tags.push('glb');
+  if (stats.images > 0) tags.push('image');
+  if (stats.videos > 0) tags.push('video');
+  if (stats.audios > 0) tags.push('audio');
+  if (stats.texts > 0) tags.push('text');
+  if (stats.loomlets > 0) tags.push('interactive');
+  if (stats.physics > 0) tags.push('physics');
+  return tags;
+}
+
+function buildStatsLabel(stats = {}) {
+  const objectCount = Number.isFinite(stats.objects) ? Math.max(0, stats.objects) : 0;
+  const parts = [`${objectCount} object${objectCount === 1 ? '' : 's'}`];
+  if (stats.glbs > 0) parts.push('glb');
+  if (stats.images > 0) parts.push('image');
+  if (stats.videos > 0) parts.push('video');
+  if (stats.audios > 0) parts.push('audio');
+  if (stats.texts > 0) parts.push('text');
+  if (stats.loomlets > 0) parts.push('interactive');
+  if (stats.physics > 0) parts.push('physics');
+  return parts.slice(0, 5).join(' · ');
+}
+
+function colorFromString(input) {
+  let hash = 0;
+  const text = normalizeText(input, 'Scene Sync');
+  for (const ch of text) {
+    hash = ((hash << 5) - hash + ch.charCodeAt(0)) | 0;
+  }
+  const hue = Math.abs(hash) % 360;
+  return `hsl(${hue}, 64%, 42%)`;
+}
+
+function escapeXml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function wrapTextForSvg(text, maxChars = 28, maxLines = 3) {
+  const words = normalizeText(text, 'Scene Sync World').split(/\s+/).filter(Boolean);
+  const lines = [];
+  for (const word of words) {
+    const current = lines[lines.length - 1] || '';
+    const next = current ? `${current} ${word}` : word;
+    if (!current) {
+      if (word.length <= maxChars) {
+        lines.push(word);
+      } else {
+        for (let index = 0; index < word.length && lines.length < maxLines; index += maxChars) {
+          lines.push(word.slice(index, index + maxChars));
+        }
+      }
+      if (lines.length >= maxLines) break;
+      continue;
+    } else if (next.length <= maxChars) {
+      lines[lines.length - 1] = next;
+    } else if (word.length <= maxChars) {
+      lines.push(word);
+    } else {
+      for (let index = 0; index < word.length && lines.length < maxLines; index += maxChars) {
+        lines.push(word.slice(index, index + maxChars));
+      }
+    }
+    if (lines.length >= maxLines) break;
+  }
+  if (lines.length === 0) lines.push('Scene Sync World');
+  if (lines.length === maxLines && words.join(' ') !== lines.join(' ')) {
+    const last = lines[maxLines - 1];
+    lines[maxLines - 1] = `${last.slice(0, Math.max(1, maxChars - 1))}…`;
+  }
+  return lines.slice(0, maxLines);
+}
+
+function generateFallbackThumbnailSvg({ title, stats }) {
+  const safeTitle = normalizeText(title, 'Scene Sync World');
+  const titleLines = wrapTextForSvg(safeTitle);
+  const label = buildStatsLabel(stats);
+  const centerY = 286 - ((titleLines.length - 1) * 42);
+  const titleText = titleLines
+    .map((line, index) => (
+      `<text x="600" y="${centerY + index * 84}" text-anchor="middle" font-size="72" font-weight="700" fill="rgba(255,255,255,0.94)">${escapeXml(line)}</text>`
+    ))
+    .join('\n  ');
+
+  return `<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${escapeXml(safeTitle)}">
+  <rect width="1200" height="630" fill="${escapeXml(colorFromString(safeTitle))}"/>
+  <rect width="1200" height="630" fill="rgba(0,0,0,0.20)"/>
+  <circle cx="1040" cy="120" r="190" fill="rgba(255,255,255,0.10)"/>
+  <circle cx="120" cy="540" r="240" fill="rgba(0,0,0,0.14)"/>
+  ${titleText}
+  <text x="600" y="500" text-anchor="middle" font-size="32" font-weight="500" fill="rgba(255,255,255,0.78)">${escapeXml(label)}</text>
+  <text x="600" y="560" text-anchor="middle" font-size="30" font-weight="700" fill="rgba(255,255,255,0.88)">Scene Sync</text>
+</svg>
+`;
+}
+
+async function writeFallbackThumbnail({ slug, title, stats, worldDir }) {
+  const svg = generateFallbackThumbnailSvg({ title, stats });
+  const buffer = Buffer.from(svg, 'utf8');
+  const hash = hashBuffer(buffer).slice(0, 8);
+  const filename = `thumbnail-${hash}.svg`;
+  await removeGeneratedThumbnails(worldDir);
+  await fs.writeFile(path.join(worldDir, filename), buffer);
+  return {
+    hash,
+    path: `worlds/${slug}/${filename}`,
+    size: buffer.byteLength,
+  };
 }
 
 function isPlainObject(value) {
@@ -478,6 +640,15 @@ async function publishSubmission(zipPath, { timestamp, prMetadata, allowPrSlugOv
   const fileSlug = sanitizeSlug(path.basename(zipPath));
   const slug = allowPrSlugOverride && prMetadata.slug ? prMetadata.slug : fileSlug;
   if (!slug) throw new Error(`Could not derive slug from ${path.basename(zipPath)}`);
+  const sceneStats = collectSceneStats(sceneDocument);
+  const generatedDescription = generateSceneDescription(sceneStats);
+  const generatedTags = generateSceneTags(sceneStats);
+  const sceneTags = Array.isArray(sceneDocument.tags) && sceneDocument.tags.length > 0
+    ? sceneDocument.tags
+    : null;
+  const manifestTags = Array.isArray(manifest?.tags) && manifest.tags.length > 0
+    ? manifest.tags
+    : null;
 
   const title = prMetadata.title
     || sceneDocument.title
@@ -486,10 +657,10 @@ async function publishSubmission(zipPath, { timestamp, prMetadata, allowPrSlugOv
   const description = prMetadata.description
     || sceneDocument.description
     || manifest?.description
-    || '';
+    || generatedDescription;
   const tags = prMetadata.tags.length > 0
     ? prMetadata.tags
-    : (Array.isArray(sceneDocument.tags) ? sceneDocument.tags : []);
+    : (sceneTags || manifestTags || generatedTags);
   const versionId = `${timestamp}-${zipHash.slice(0, 8)}`;
   const worldDir = path.join(WORLDS_DIR, slug);
   const versionDir = path.join(worldDir, 'versions', versionId);
@@ -506,7 +677,25 @@ async function publishSubmission(zipPath, { timestamp, prMetadata, allowPrSlugOv
   }
 
   const thumbnailPath = findThumbnailPath(zip);
-  if (!thumbnailPath) warnings.push('No thumbnail image found');
+  let worldThumbnailPath = null;
+  let generatedThumbnail = null;
+  if (thumbnailPath) {
+    await removeGeneratedThumbnails(worldDir);
+    worldThumbnailPath = `worlds/${slug}/versions/${versionId}/${thumbnailPath}`;
+  } else {
+    try {
+      generatedThumbnail = await writeFallbackThumbnail({
+        slug,
+        title,
+        stats: sceneStats,
+        worldDir,
+      });
+      worldThumbnailPath = generatedThumbnail.path;
+    } catch (error) {
+      warnings.push(`Fallback thumbnail generation failed: ${error.message}`);
+      warnings.push('No thumbnail image found');
+    }
+  }
 
   const updatedAt = new Date().toISOString();
   const current = {
@@ -517,6 +706,7 @@ async function publishSubmission(zipPath, { timestamp, prMetadata, allowPrSlugOv
     tags,
     versionId,
     versionPath: `versions/${versionId}/`,
+    thumbnail: worldThumbnailPath,
     updatedAt,
     zipSha256: zipHash,
   };
@@ -534,7 +724,7 @@ async function publishSubmission(zipPath, { timestamp, prMetadata, allowPrSlugOv
     versionId,
     path: `worlds/${slug}/`,
     versionPath: `worlds/${slug}/versions/${versionId}/`,
-    thumbnail: thumbnailPath ? `worlds/${slug}/versions/${versionId}/${thumbnailPath}` : null,
+    thumbnail: worldThumbnailPath,
     objectCount: sceneDocument.objects.length,
     assetCount: collectAssetCount(manifest),
     zipSize,
@@ -559,6 +749,7 @@ async function publishSubmission(zipPath, { timestamp, prMetadata, allowPrSlugOv
     zipSize,
     expandedSize: extraction.totalUncompressedBytes,
     warnings,
+    thumbnail: generatedThumbnail,
     urlPath: `docs/worlds/${slug}/versions/${versionId}/`,
   };
 }
