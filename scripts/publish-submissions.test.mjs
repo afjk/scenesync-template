@@ -76,7 +76,7 @@ async function createExistingWorld(root, slug, overrides = {}) {
   return record;
 }
 
-async function createSceneZip() {
+async function createSceneZip({ thumbnail = false, richScene = false } = {}) {
   const zip = new JSZip();
   zip.file('index.html', '<!doctype html><title>Scene</title>');
   zip.file('scene.json', JSON.stringify({
@@ -91,12 +91,47 @@ async function createSceneZip() {
         scale: [1, 1, 1],
         asset: { type: 'primitive', primitive: 'box' },
       },
+      ...(richScene ? [
+        {
+          id: 'image-1',
+          name: 'Image',
+          position: [0, 0, 0],
+          rotation: [0, 0, 0, 1],
+          scale: [1, 1, 1],
+          asset: { type: 'image', path: 'assets/image.png' },
+        },
+        {
+          id: 'mesh-1',
+          name: 'Mesh',
+          position: [0, 0, 0],
+          rotation: [0, 0, 0, 1],
+          scale: [1, 1, 1],
+          asset: { type: 'mesh', path: 'assets/model.glb' },
+          physics: { enabled: true },
+        },
+        {
+          id: 'text-1',
+          name: 'Text',
+          position: [0, 0, 0],
+          rotation: [0, 0, 0, 1],
+          scale: [1, 1, 1],
+          asset: { type: 'text', source: 'inline', text: 'hello' },
+          audioSources: { default: { url: 'assets/audio.mp3' } },
+        },
+      ] : []),
     ],
+    ...(richScene ? {
+      bgm: { url: 'assets/bgm.mp3' },
+      behaviors: { graphs: { 'box-1': {} } },
+    } : {}),
   }));
   zip.file('manifest.json', JSON.stringify({
     schemaVersion: 1,
     assets: [],
   }));
+  if (thumbnail) {
+    zip.file('thumbnail.png', PNG_BYTES);
+  }
   return await zip.generateAsync({ type: 'nodebuffer' });
 }
 
@@ -184,7 +219,39 @@ test('publishes a ZIP and applies matching thumbnail/metadata patch in the same 
   match(world.thumbnail, /^worlds\/new-room\/thumbnail-[a-f0-9]{8}\.png$/);
   ok(world.versionId);
   await fs.access(path.join(root, `docs/worlds/new-room/versions/${world.versionId}/scene.json`));
+  await fs.access(path.join(root, 'docs', world.thumbnail));
   deepStrictEqual(await listSubmissionFiles(root), []);
+});
+
+test('publishes generated description, tags, and fallback SVG thumbnail for ZIPs without metadata', async () => {
+  const root = await createTempProject();
+  await fs.writeFile(path.join(root, 'submissions/generated-room.zip'), await createSceneZip({ richScene: true }));
+
+  await runPublisher(root);
+
+  const catalog = await readJson(path.join(root, 'docs/worlds.json'));
+  const world = catalog.worlds.find((entry) => entry.slug === 'generated-room');
+  equal(world.title, 'Generated Room');
+  equal(world.description, '3Dモデル1個、画像1個、音声2個、テキスト1個、インタラクション1個、物理オブジェクト1個を含むScene Syncワールドです。');
+  deepStrictEqual(world.tags, ['scene-sync', 'glb', 'image', 'audio', 'text', 'interactive', 'physics']);
+  match(world.thumbnail, /^worlds\/generated-room\/thumbnail-[a-f0-9]{8}\.svg$/);
+  deepStrictEqual(world.warnings, []);
+  await fs.access(path.join(root, 'docs', world.thumbnail));
+  const current = await readJson(path.join(root, 'docs/worlds/generated-room/current.json'));
+  equal(current.thumbnail, world.thumbnail);
+});
+
+test('uses ZIP thumbnail before publisher fallback thumbnail', async () => {
+  const root = await createTempProject();
+  await fs.writeFile(path.join(root, 'submissions/zip-thumb.zip'), await createSceneZip({ thumbnail: true }));
+
+  await runPublisher(root);
+
+  const catalog = await readJson(path.join(root, 'docs/worlds.json'));
+  const world = catalog.worlds.find((entry) => entry.slug === 'zip-thumb');
+  match(world.thumbnail, /^worlds\/zip-thumb\/versions\/[^/]+\/thumbnail\.png$/);
+  await fs.access(path.join(root, 'docs', world.thumbnail));
+  deepStrictEqual(world.warnings, []);
 });
 
 test('does not apply PR body metadata when a PR targets multiple slugs', async () => {
