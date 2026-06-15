@@ -1,0 +1,44 @@
+{
+  "format": "scene-sync-export",
+  "version": 1,
+  "exportedAt": "2026-06-15T22:53:27.881Z",
+  "viewer": {
+    "entry": "index.html"
+  },
+  "assets": [
+    {
+      "id": "web-smo5awfa",
+      "kind": "mesh",
+      "path": "assets/candyrockstar_scenesync_verify.glb",
+      "status": "included",
+      "source": "indexeddb"
+    },
+    {
+      "id": "web-smo5awfa:default",
+      "objectId": "web-smo5awfa",
+      "kind": "audioSource",
+      "name": "default",
+      "path": "assets/web-smo5awfa-default.mp3",
+      "status": "included"
+    },
+    {
+      "id": "img-d92f193132c94a1a",
+      "kind": "image",
+      "path": "assets/img-d92f193132c94a1a.png",
+      "status": "included"
+    },
+    {
+      "id": "skybox-studio",
+      "kind": "skybox",
+      "path": "assets/env.hdr",
+      "status": "included"
+    }
+  ],
+  "missingAssets": [],
+  "notes": [
+    "This is a read-only exported scene.",
+    "Editing and multi-user sync are not included.",
+    "Open through a local web server when previewing locally.",
+    "This initial export may require an internet connection to load viewer dependencies such as three.js, Three.js addons, Draco decoder, and JSZip from cdn.jsdelivr.net."
+  ]
+}

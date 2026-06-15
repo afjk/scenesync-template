@@ -1,0 +1,142 @@
+{
+  "format": "scene-sync-export-scene",
+  "version": 2,
+  "units": "meters",
+  "loomletRuntime": {
+    "version": "0.1.2",
+    "graphVersion": "scene-sync-graph-json-v1",
+    "adapter": "scenesync"
+  },
+  "objects": [
+    {
+      "id": "web-smo5awfa",
+      "name": "CandyRockStar_scenesync_verify.glb",
+      "asset": {
+        "type": "mesh",
+        "source": "carrier",
+        "path": "assets/candyrockstar_scenesync_verify.glb",
+        "mime": "model/gltf-binary",
+        "visualBasis": null,
+        "originalName": "CandyRockStar_scenesync_verify.glb"
+      },
+      "position": [
+        0.10595291658457372,
+        0.13172537508068882,
+        -0.6673255519170057
+      ],
+      "rotation": [
+        0,
+        -0.18952486098104773,
+        0,
+        0.9818759224413819
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true,
+      "animation": {
+        "enabled": true,
+        "clip": 0,
+        "mode": "loop",
+        "speed": 1,
+        "clipName": "003_NOT01_Final",
+        "offset": 2.3
+      },
+      "audioSources": {
+        "default": {
+          "type": "audioSource",
+          "name": "default",
+          "url": "https://raw.githubusercontent.com/unity3d-jp/unitychan-crs/master/Assets/UniteInTheSky/Unite%20In%20The%20Sky%20(full).mp3",
+          "volume": 1,
+          "loop": true,
+          "playOnAwake": true,
+          "offset": 0,
+          "playbackRate": 1,
+          "spatial": true,
+          "asset": {
+            "path": "assets/web-smo5awfa-default.mp3"
+          }
+        }
+      }
+    },
+    {
+      "id": "img-d92f193132c94a1a",
+      "name": "image: image.png",
+      "asset": {
+        "type": "image",
+        "source": "blob",
+        "url": "https://staging.afjk.jp/presence/blob/3q2z16ho.png",
+        "path": "assets/img-d92f193132c94a1a.png",
+        "mime": "image/png",
+        "width": 234,
+        "height": 202
+      },
+      "position": [
+        8.881784197001252e-16,
+        0,
+        -4.333653595631509
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "media-panel",
+        "accepts": [
+          "image",
+          "video"
+        ],
+        "fit": "contain",
+        "image": {
+          "originalWidth": 234,
+          "originalHeight": 202,
+          "textureWidth": 234,
+          "textureHeight": 202,
+          "originalBytes": 39656,
+          "maxPixel": 2048,
+          "optimized": false
+        },
+        "placement": {
+          "surfaceKind": "unknown",
+          "normal": null
+        }
+      }
+    }
+  ],
+  "skybox": {
+    "type": "env",
+    "envId": "studio",
+    "asset": {
+      "path": "assets/env.hdr"
+    }
+  },
+  "bgm": null,
+  "behaviors": {
+    "scene": null,
+    "objects": {}
+  },
+  "physics": {
+    "version": 1,
+    "enabled": true,
+    "duration": 10,
+    "worldOptions": {
+      "gravity": -9.81,
+      "ground": {
+        "y": 0,
+        "restitution": 0.2,
+        "friction": 0.5
+      },
+      "timestep": 0.016666666666666666
+    }
+  }
+}

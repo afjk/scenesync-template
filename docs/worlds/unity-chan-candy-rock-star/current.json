@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "slug": "unity-chan-candy-rock-star",
+  "title": "Unity Chan Candy Rock Star",
+  "description": "3Dモデル1個、画像1個、音声1個、インタラクション1個を含むScene Syncワールドです。",
+  "tags": [
+    "scene-sync",
+    "glb",
+    "image",
+    "audio",
+    "interactive"
+  ],
+  "versionId": "20260615T230836Z-03dee989",
+  "versionPath": "versions/20260615T230836Z-03dee989/",
+  "thumbnail": "worlds/unity-chan-candy-rock-star/versions/20260615T230836Z-03dee989/thumbnail.png",
+  "updatedAt": "2026-06-15T23:08:37.002Z",
+  "zipSha256": "03dee9898d4cc6f0811adff2c0683ff75c77aff22b299f0273c8af046f9dfacb"
+}
