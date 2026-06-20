@@ -34,6 +34,59 @@ function safeSeek(audio, time) {
   try { audio.currentTime = time; } catch {}
 }
 
+function safeAutoSeek(entry, time, nowMs, { minIntervalMs = 250, force = false } = {}) {
+  const audio = entry?.audio;
+  if (!audio || !Number.isFinite(time) || time < 0) return false;
+  if (!force && audio.seeking === true) return false;
+  if (
+    !force
+    && Number.isFinite(entry.lastAutoSeekAtMs)
+    && Number.isFinite(nowMs)
+    && nowMs - entry.lastAutoSeekAtMs < minIntervalMs
+  ) {
+    return false;
+  }
+
+  try {
+    audio.currentTime = time;
+    entry.lastAutoSeekAtMs = Number.isFinite(nowMs) ? nowMs : defaultNow();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function wrappedDistance(a, b, duration) {
+  const direct = Math.abs(a - b);
+  return duration ? Math.min(direct, Math.max(0, duration - direct)) : direct;
+}
+
+function noteAutoSyncTarget(entry, target, nowMs, source, clockState) {
+  const previousTarget = entry.lastAutoTargetTime;
+  const previousNow = entry.lastAutoTargetAtMs;
+  let jumped = false;
+
+  if (Number.isFinite(previousTarget) && Number.isFinite(previousNow) && Number.isFinite(nowMs)) {
+    const elapsed = Math.max(0, (nowMs - previousNow) / 1000);
+    const transportRate = Number.isFinite(clockState?.rate) && clockState.rate > 0 ? clockState.rate : 1;
+    let expected = previousTarget + elapsed * transportRate;
+    const duration = audioDuration(entry.audio);
+    if (duration && source?.loop === true) {
+      expected = ((expected % duration) + duration) % duration;
+    }
+    const distance = duration && source?.loop === true
+      ? wrappedDistance(target, expected, duration)
+      : Math.abs(target - expected);
+    jumped = distance > 0.3;
+  } else {
+    jumped = false;
+  }
+
+  entry.lastAutoTargetTime = target;
+  entry.lastAutoTargetAtMs = Number.isFinite(nowMs) ? nowMs : defaultNow();
+  return jumped;
+}
+
 function safeLoad(audio) {
   try { audio?.load?.(); } catch {}
 }
@@ -243,7 +296,7 @@ export function createObjectAudioController({
     safeSeek(entry.audio, duration ? Math.min(offset, duration) : offset);
   }
 
-  function syncAnimationEntry(entry) {
+  function syncAnimationEntry(entry, nowMs) {
     const sync = entry.sync;
     if (!sync || sync.mode !== 'animation' || typeof getAnimationSample !== 'function') return false;
 
@@ -259,10 +312,11 @@ export function createObjectAudioController({
     const driftThreshold = Number.isFinite(sync.driftThreshold) ? sync.driftThreshold : 0.05;
     const looped = entry.lastSampleTime != null && sample.time < entry.lastSampleTime;
     entry.lastSampleTime = sample.time;
+    const targetJumped = noteAutoSyncTarget(entry, target, nowMs, entry.source, null);
 
     const drift = Math.abs((entry.audio.currentTime || 0) - target);
     if (drift > driftThreshold && (sync.resyncOnLoop !== false || !looped)) {
-      safeSeek(entry.audio, target);
+      safeAutoSeek(entry, target, nowMs, { force: targetJumped });
     }
 
     return true;
@@ -271,10 +325,11 @@ export function createObjectAudioController({
   function syncTimelineEntry(entry, nowMs, clockState, driftThreshold = 0.15) {
     const target = timelineTargetTime(entry, clockState, nowMs, startMs);
     if (!Number.isFinite(target)) return false;
+    const targetJumped = noteAutoSyncTarget(entry, target, nowMs, entry.source, clockState);
 
     const drift = Math.abs((entry.audio.currentTime || 0) - target);
     if (drift > driftThreshold) {
-      safeSeek(entry.audio, target);
+      safeAutoSeek(entry, target, nowMs, { force: targetJumped });
     }
     return true;
   }
@@ -295,7 +350,7 @@ export function createObjectAudioController({
       return;
     }
 
-    const syncedToAnimation = syncAnimationEntry(entry);
+    const syncedToAnimation = syncAnimationEntry(entry, nowMs);
 
     if (isTransportPaused(clockState) || entry.userPaused) {
       if (entry.audio.paused === false) safePause(entry.audio);
@@ -404,6 +459,9 @@ export function createObjectAudioController({
       autoplayBlocked: false,
       warnedAutoplayBlocked: false,
       lastSampleTime: null,
+      lastAutoSeekAtMs: null,
+      lastAutoTargetTime: null,
+      lastAutoTargetAtMs: null,
       oneShotActive: false,
       oneShotToken: 0,
     };
