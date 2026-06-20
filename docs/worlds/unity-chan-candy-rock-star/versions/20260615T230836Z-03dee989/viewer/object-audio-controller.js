@@ -69,8 +69,7 @@ function noteAutoSyncTarget(entry, target, nowMs, source, clockState) {
   if (Number.isFinite(previousTarget) && Number.isFinite(previousNow) && Number.isFinite(nowMs)) {
     const elapsed = Math.max(0, (nowMs - previousNow) / 1000);
     const transportRate = Number.isFinite(clockState?.rate) && clockState.rate > 0 ? clockState.rate : 1;
-    const expectedRate = positiveNumber(source?.playbackRate, 1) * transportRate;
-    let expected = previousTarget + elapsed * expectedRate;
+    let expected = previousTarget + elapsed * transportRate;
     const duration = audioDuration(entry.audio);
     if (duration && source?.loop === true) {
       expected = ((expected % duration) + duration) % duration;
@@ -80,7 +79,7 @@ function noteAutoSyncTarget(entry, target, nowMs, source, clockState) {
       : Math.abs(target - expected);
     jumped = distance > 0.3;
   } else {
-    jumped = true;
+    jumped = false;
   }
 
   entry.lastAutoTargetTime = target;
