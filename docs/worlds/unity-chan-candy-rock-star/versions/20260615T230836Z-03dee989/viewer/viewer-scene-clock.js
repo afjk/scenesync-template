@@ -176,6 +176,13 @@ export function createViewerSceneClock({
     emit();
   }
 
+  function syncPlaybackTime(seconds, nowMs = now()) {
+    const nextTime = clampTime(seconds, state.duration);
+    state.localTime = nextTime;
+    state.lastUpdateNow = nowMs;
+    state.pausedAt = state.paused ? nextTime : null;
+  }
+
   function setRate(rate, nowMs = now()) {
     const nextRate = Number(rate);
     if (!Number.isFinite(nextRate) || nextRate < 0) return;
@@ -212,6 +219,7 @@ export function createViewerSceneClock({
     pause,
     stop,
     seek,
+    syncPlaybackTime,
     setRate,
     activateTransport,
     deactivateTransport,

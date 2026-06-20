@@ -641,6 +641,13 @@ export async function createViewerCore({
     objectAudioController.tick(now, clockState);
   }
 
+  function alignClockToObjectAudio(clockState, now = performance.now()) {
+    const mediaClockState = objectAudioController.getMediaClockState(clockState);
+    if (!mediaClockState) return clockState;
+    sceneClock.syncPlaybackTime(mediaClockState.time, now);
+    return mediaClockState;
+  }
+
   function evaluateAndSyncClock(clockState, now = performance.now()) {
     evaluateSceneAtClock(clockState);
     syncObjectAudioAtClock(clockState, now);
@@ -689,7 +696,7 @@ export async function createViewerCore({
   const api = {
     update() {
       const now = performance.now();
-      const clockState = sceneClock.tick(now);
+      const clockState = alignClockToObjectAudio(sceneClock.tick(now), now);
       evaluateSceneAtClock(clockState);
       if (loomAdapter) {
         loomAdapter.tick(clockState, now);
@@ -698,7 +705,7 @@ export async function createViewerCore({
     },
 
     getSceneClockState() {
-      return sceneClock.getState();
+      return alignClockToObjectAudio(sceneClock.getState());
     },
 
     onStateChange(listener) {
@@ -712,7 +719,7 @@ export async function createViewerCore({
     },
 
     getPhysicsPlaybackState() {
-      const state = sceneClock.getState();
+      const state = alignClockToObjectAudio(sceneClock.getState());
       return { time: state.time, duration: state.duration, playing: state.playing };
     },
 
