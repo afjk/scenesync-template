@@ -166,6 +166,23 @@ function timelineTargetTime(entry, clockState, nowMs, startMs) {
   return Math.max(0, target);
 }
 
+function timelineTimeFromAudio(entry, clockState = null) {
+  const audioTime = Number.isFinite(entry?.audio?.currentTime) ? entry.audio.currentTime : null;
+  if (!Number.isFinite(audioTime)) return null;
+
+  const offset = finiteNumber(entry.source.offset, 0);
+  const duration = Number.isFinite(clockState?.duration) && clockState.duration > 0
+    ? clockState.duration
+    : null;
+  let time = audioTime - offset;
+
+  if (duration) {
+    time = Math.min(Math.max(0, time), duration);
+  }
+
+  return Math.max(0, time);
+}
+
 function applyTransportPlaybackRate(audio, source, clockState) {
   if (!audio) return;
   const sourceRate = positiveNumber(source.playbackRate, 1);
@@ -207,6 +224,25 @@ export function createObjectAudioController({
 
   function getPlaybackTargetEntries() {
     return entries.filter((entry) => entry.desiredState === 'playing');
+  }
+
+  function getMediaClockEntry() {
+    return entries.find((entry) => (
+      entry.desiredState === 'playing'
+      && entry.userPaused !== true
+      && entry.oneShotActive !== true
+      && !entry.sync
+      && entry.source.clockMaster !== false
+      && entry.audio?.paused === false
+      && entry.audio?.seeking !== true
+      && Number.isFinite(entry.audio?.currentTime)
+    )) || null;
+  }
+
+  function resetMediaClockTracking() {
+    for (const entry of entries) {
+      entry.lastMediaClockTime = null;
+    }
   }
 
   function cancelEntryOneShot(entry) {
@@ -462,6 +498,7 @@ export function createObjectAudioController({
       lastAutoSeekAtMs: null,
       lastAutoTargetTime: null,
       lastAutoTargetAtMs: null,
+      lastMediaClockTime: null,
       oneShotActive: false,
       oneShotToken: 0,
     };
@@ -519,8 +556,40 @@ export function createObjectAudioController({
       return getPlaybackTargetEntries().map((entry) => entry.audio);
     },
 
+    getMediaClockState(clockState = null) {
+      if (isTransportPaused(clockState)) {
+        resetMediaClockTracking();
+        return null;
+      }
+
+      const entry = getMediaClockEntry();
+      if (!entry) {
+        resetMediaClockTracking();
+        return null;
+      }
+
+      const time = timelineTimeFromAudio(entry, clockState);
+      if (!Number.isFinite(time)) return null;
+
+      const previous = Number.isFinite(entry.lastMediaClockTime) ? entry.lastMediaClockTime : time;
+      entry.lastMediaClockTime = time;
+
+      return {
+        ...(clockState || {}),
+        time,
+        t: time,
+        delta: Math.max(0, time - previous),
+        mediaClockActive: true,
+        mediaClockSource: {
+          objectId: entry.objectId,
+          name: entry.name,
+        },
+      };
+    },
+
     playPlaybackTargets(clockState = null, nowMs = now()) {
       return Promise.allSettled(getPlaybackTargetEntries().map((entry) => {
+        entry.lastMediaClockTime = null;
         entry.userPaused = false;
         tickEntry(entry, nowMs, clockState);
         if (isTransportPaused(clockState)) return Promise.resolve(true);
@@ -531,6 +600,7 @@ export function createObjectAudioController({
     pausePlaybackTargets() {
       for (const entry of getPlaybackTargetEntries()) {
         cancelEntryOneShot(entry);
+        entry.lastMediaClockTime = null;
         entry.userPaused = true;
         safePause(entry.audio);
       }
@@ -544,20 +614,24 @@ export function createObjectAudioController({
 
       if (effect.type === 'audioSource.play') {
         cancelEntryOneShot(entry);
+        entry.lastMediaClockTime = null;
         entry.desiredState = 'playing';
         entry.userPaused = false;
       } else if (effect.type === 'audioSource.pause') {
         cancelEntryOneShot(entry);
+        entry.lastMediaClockTime = null;
         entry.desiredState = 'paused';
         entry.userPaused = false;
         safePause(entry.audio);
       } else if (effect.type === 'audioSource.stop') {
         cancelEntryOneShot(entry);
+        entry.lastMediaClockTime = null;
         entry.desiredState = 'stopped';
         entry.userPaused = false;
         safePause(entry.audio);
         safeSeek(entry.audio, 0);
       } else if (effect.type === 'audioSource.seek') {
+        entry.lastMediaClockTime = null;
         safeSeek(entry.audio, Math.max(0, finiteNumber(effect.time, 0)));
       } else if (effect.type === 'audioSource.playOneShot') {
         const options = effect.options || {};
@@ -595,6 +669,7 @@ export function createObjectAudioController({
         entry.source.url = effect.url;
         entry.audio.src = effect.url;
         entry.started = false;
+        entry.lastMediaClockTime = null;
         entry.autoplayBlocked = false;
         safeLoad(entry.audio);
       } else if (effect.type === 'audioSource.syncToAnimation') {
