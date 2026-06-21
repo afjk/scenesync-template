@@ -1,0 +1,24 @@
+{
+  "format": "scene-sync-export",
+  "version": 1,
+  "exportedAt": "2026-06-21T05:41:44.266Z",
+  "title": "Domino",
+  "viewer": {
+    "entry": "index.html"
+  },
+  "assets": [
+    {
+      "id": "skybox-outdoor_day",
+      "kind": "skybox",
+      "path": "assets/env.hdr",
+      "status": "included"
+    }
+  ],
+  "missingAssets": [],
+  "notes": [
+    "This is a read-only exported scene.",
+    "Editing and multi-user sync are not included.",
+    "Open through a local web server when previewing locally.",
+    "This initial export may require an internet connection to load viewer dependencies such as three.js, Three.js addons, Draco decoder, and JSZip from cdn.jsdelivr.net."
+  ]
+}

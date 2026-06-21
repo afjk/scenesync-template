@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-06-21T05:51:11.302Z",
+  "updatedAt": "2026-06-21T06:01:10.032Z",
   "worlds": [
     {
       "schemaVersion": 1,
@@ -12,16 +12,16 @@
         "text",
         "physics"
       ],
-      "updatedAt": "2026-06-21T05:51:11.302Z",
-      "versionId": "20260621T055111Z-e488987d",
+      "updatedAt": "2026-06-21T06:01:10.032Z",
+      "versionId": "20260621T060109Z-35be87b1",
       "path": "worlds/domino/",
-      "versionPath": "worlds/domino/versions/20260621T055111Z-e488987d/",
-      "thumbnail": "worlds/domino/versions/20260621T055111Z-e488987d/thumbnail.png",
+      "versionPath": "worlds/domino/versions/20260621T060109Z-35be87b1/",
+      "thumbnail": "worlds/domino/versions/20260621T060109Z-35be87b1/thumbnail.png",
       "objectCount": 22,
       "assetCount": 1,
-      "zipSize": 3378093,
-      "expandedSize": 6820766,
-      "zipSha256": "e488987d91496ab7c62b0699a0b4af3ebb38991b46ff430d9ae5ea575e96a39a",
+      "zipSize": 3387031,
+      "expandedSize": 6845068,
+      "zipSha256": "35be87b17e8c6ff87431fd808718ff6c68ca128832513a8aa15f89202ecd5da2",
       "warnings": []
     },
     {
