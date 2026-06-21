@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "slug": "domino",
+  "title": "Domino",
+  "description": "テキスト1個、物理オブジェクト21個を含むScene Syncワールドです。",
+  "tags": [
+    "scene-sync",
+    "text",
+    "physics"
+  ],
+  "versionId": "20260621T055111Z-e488987d",
+  "versionPath": "versions/20260621T055111Z-e488987d/",
+  "thumbnail": "worlds/domino/versions/20260621T055111Z-e488987d/thumbnail.png",
+  "updatedAt": "2026-06-21T05:51:11.302Z",
+  "zipSha256": "e488987d91496ab7c62b0699a0b4af3ebb38991b46ff430d9ae5ea575e96a39a"
+}

@@ -1,0 +1,1470 @@
+{
+  "format": "scene-sync-export-scene",
+  "version": 2,
+  "units": "meters",
+  "loomletRuntime": {
+    "version": "0.1.2",
+    "graphVersion": "scene-sync-graph-json-v1",
+    "adapter": "scenesync"
+  },
+  "objects": [
+    {
+      "id": "floor",
+      "name": "Floor",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#2f3742"
+      },
+      "position": [
+        1,
+        -0.06,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        12.5,
+        0.12,
+        4
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-floor"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "static",
+        "shape": "box",
+        "mass": 0,
+        "restitution": 0.05,
+        "friction": 0.8,
+        "halfExtents": [
+          6.25,
+          0.06,
+          2
+        ]
+      }
+    },
+    {
+      "id": "ramp",
+      "name": "Ramp",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#d49343"
+      },
+      "position": [
+        -3.05,
+        1.18,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.13917310096006544,
+        0.9902680687415704
+      ],
+      "scale": [
+        4.4,
+        0.18,
+        1.1
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-ramp"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "static",
+        "shape": "box",
+        "mass": 0,
+        "restitution": 0.04,
+        "friction": 0.72,
+        "halfExtents": [
+          2.2,
+          0.09,
+          0.55
+        ]
+      }
+    },
+    {
+      "id": "back-rail",
+      "name": "Back Rail",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#b06a2a"
+      },
+      "position": [
+        -5.25,
+        2.02,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.13917310096006544,
+        0.9902680687415704
+      ],
+      "scale": [
+        0.12,
+        0.45,
+        1.1
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-rail"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "static",
+        "shape": "box",
+        "mass": 0,
+        "restitution": 0.05,
+        "friction": 0.7,
+        "halfExtents": [
+          0.06,
+          0.225,
+          0.55
+        ]
+      }
+    },
+    {
+      "id": "ball",
+      "name": "Rolling Ball",
+      "asset": {
+        "type": "primitive",
+        "primitive": "sphere",
+        "color": "#4f8cff"
+      },
+      "position": [
+        -5,
+        2.3499999046325684,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.56,
+        0.56,
+        0.56
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-ball"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "sphere",
+        "mass": 2,
+        "restitution": 0.08,
+        "friction": 0.65,
+        "velocity": [
+          1.4,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          -4
+        ],
+        "radius": 0.28,
+        "initialTransform": {
+          "position": [
+            -5,
+            2.35,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            0.56,
+            0.56,
+            0.56
+          ]
+        }
+      }
+    },
+    {
+      "id": "domino-01",
+      "name": "Domino 01",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#e74c3c"
+      },
+      "position": [
+        -0.07999999821186066,
+        0.6600000262260437,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.12,
+        1.32,
+        0.52
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-domino",
+        "index": 1
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.32,
+        "restitution": 0.02,
+        "friction": 0.85,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.66,
+          0.26
+        ],
+        "initialTransform": {
+          "position": [
+            -0.08,
+            0.66,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            0.12,
+            1.32,
+            0.52
+          ]
+        }
+      }
+    },
+    {
+      "id": "domino-02",
+      "name": "Domino 02",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#f39c12"
+      },
+      "position": [
+        0.30000001192092896,
+        0.6600000262260437,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.12,
+        1.32,
+        0.52
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-domino",
+        "index": 2
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.32,
+        "restitution": 0.02,
+        "friction": 0.85,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.66,
+          0.26
+        ],
+        "initialTransform": {
+          "position": [
+            0.3,
+            0.66,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            0.12,
+            1.32,
+            0.52
+          ]
+        }
+      }
+    },
+    {
+      "id": "domino-03",
+      "name": "Domino 03",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#f1c40f"
+      },
+      "position": [
+        0.6800000071525574,
+        0.6600000262260437,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.12,
+        1.32,
+        0.52
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-domino",
+        "index": 3
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.32,
+        "restitution": 0.02,
+        "friction": 0.85,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.66,
+          0.26
+        ],
+        "initialTransform": {
+          "position": [
+            0.68,
+            0.66,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            0.12,
+            1.32,
+            0.52
+          ]
+        }
+      }
+    },
+    {
+      "id": "domino-04",
+      "name": "Domino 04",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#2ecc71"
+      },
+      "position": [
+        1.059999942779541,
+        0.6600000262260437,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.12,
+        1.32,
+        0.52
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-domino",
+        "index": 4
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.32,
+        "restitution": 0.02,
+        "friction": 0.85,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.66,
+          0.26
+        ],
+        "initialTransform": {
+          "position": [
+            1.06,
+            0.66,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            0.12,
+            1.32,
+            0.52
+          ]
+        }
+      }
+    },
+    {
+      "id": "domino-05",
+      "name": "Domino 05",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#1abc9c"
+      },
+      "position": [
+        1.440000057220459,
+        0.6600000262260437,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.12,
+        1.32,
+        0.52
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-domino",
+        "index": 5
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.32,
+        "restitution": 0.02,
+        "friction": 0.85,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.66,
+          0.26
+        ],
+        "initialTransform": {
+          "position": [
+            1.44,
+            0.66,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            0.12,
+            1.32,
+            0.52
+          ]
+        }
+      }
+    },
+    {
+      "id": "domino-06",
+      "name": "Domino 06",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#3498db"
+      },
+      "position": [
+        1.8200000524520874,
+        0.6600000262260437,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.12,
+        1.32,
+        0.52
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-domino",
+        "index": 6
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.32,
+        "restitution": 0.02,
+        "friction": 0.85,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.66,
+          0.26
+        ],
+        "initialTransform": {
+          "position": [
+            1.8199999999999998,
+            0.66,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            0.12,
+            1.32,
+            0.52
+          ]
+        }
+      }
+    },
+    {
+      "id": "domino-07",
+      "name": "Domino 07",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#9b59b6"
+      },
+      "position": [
+        2.200000047683716,
+        0.6600000262260437,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.12,
+        1.32,
+        0.52
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-domino",
+        "index": 7
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.32,
+        "restitution": 0.02,
+        "friction": 0.85,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.66,
+          0.26
+        ],
+        "initialTransform": {
+          "position": [
+            2.2,
+            0.66,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            0.12,
+            1.32,
+            0.52
+          ]
+        }
+      }
+    },
+    {
+      "id": "domino-08",
+      "name": "Domino 08",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#e84393"
+      },
+      "position": [
+        2.5799999237060547,
+        0.6600000262260437,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.12,
+        1.32,
+        0.52
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-domino",
+        "index": 8
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.32,
+        "restitution": 0.02,
+        "friction": 0.85,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.66,
+          0.26
+        ],
+        "initialTransform": {
+          "position": [
+            2.58,
+            0.66,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            0.12,
+            1.32,
+            0.52
+          ]
+        }
+      }
+    },
+    {
+      "id": "domino-09",
+      "name": "Domino 09",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#e74c3c"
+      },
+      "position": [
+        2.9600000381469727,
+        0.6600000262260437,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.12,
+        1.32,
+        0.52
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-domino",
+        "index": 9
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.32,
+        "restitution": 0.02,
+        "friction": 0.85,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.66,
+          0.26
+        ],
+        "initialTransform": {
+          "position": [
+            2.96,
+            0.66,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            0.12,
+            1.32,
+            0.52
+          ]
+        }
+      }
+    },
+    {
+      "id": "domino-10",
+      "name": "Domino 10",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#f39c12"
+      },
+      "position": [
+        3.3399999141693115,
+        0.6600000262260437,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.12,
+        1.32,
+        0.52
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-domino",
+        "index": 10
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.32,
+        "restitution": 0.02,
+        "friction": 0.85,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.66,
+          0.26
+        ],
+        "initialTransform": {
+          "position": [
+            3.34,
+            0.66,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            0.12,
+            1.32,
+            0.52
+          ]
+        }
+      }
+    },
+    {
+      "id": "domino-11",
+      "name": "Domino 11",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#f1c40f"
+      },
+      "position": [
+        3.7200000286102295,
+        0.6600000262260437,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.12,
+        1.32,
+        0.52
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-domino",
+        "index": 11
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.32,
+        "restitution": 0.02,
+        "friction": 0.85,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.66,
+          0.26
+        ],
+        "initialTransform": {
+          "position": [
+            3.7199999999999998,
+            0.66,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            0.12,
+            1.32,
+            0.52
+          ]
+        }
+      }
+    },
+    {
+      "id": "domino-12",
+      "name": "Domino 12",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#2ecc71"
+      },
+      "position": [
+        4.099999904632568,
+        0.6600000262260437,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.12,
+        1.32,
+        0.52
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-domino",
+        "index": 12
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.32,
+        "restitution": 0.02,
+        "friction": 0.85,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.66,
+          0.26
+        ],
+        "initialTransform": {
+          "position": [
+            4.1,
+            0.66,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            0.12,
+            1.32,
+            0.52
+          ]
+        }
+      }
+    },
+    {
+      "id": "domino-13",
+      "name": "Domino 13",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#1abc9c"
+      },
+      "position": [
+        4.480000019073486,
+        0.6600000262260437,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.12,
+        1.32,
+        0.52
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-domino",
+        "index": 13
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.32,
+        "restitution": 0.02,
+        "friction": 0.85,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.66,
+          0.26
+        ],
+        "initialTransform": {
+          "position": [
+            4.48,
+            0.66,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            0.12,
+            1.32,
+            0.52
+          ]
+        }
+      }
+    },
+    {
+      "id": "domino-14",
+      "name": "Domino 14",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#3498db"
+      },
+      "position": [
+        4.860000133514404,
+        0.6600000262260437,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.12,
+        1.32,
+        0.52
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-domino",
+        "index": 14
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.32,
+        "restitution": 0.02,
+        "friction": 0.85,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.66,
+          0.26
+        ],
+        "initialTransform": {
+          "position": [
+            4.86,
+            0.66,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            0.12,
+            1.32,
+            0.52
+          ]
+        }
+      }
+    },
+    {
+      "id": "domino-15",
+      "name": "Domino 15",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#9b59b6"
+      },
+      "position": [
+        5.239999771118164,
+        0.6600000262260437,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.12,
+        1.32,
+        0.52
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-domino",
+        "index": 15
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.32,
+        "restitution": 0.02,
+        "friction": 0.85,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.66,
+          0.26
+        ],
+        "initialTransform": {
+          "position": [
+            5.24,
+            0.66,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            0.12,
+            1.32,
+            0.52
+          ]
+        }
+      }
+    },
+    {
+      "id": "domino-16",
+      "name": "Domino 16",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#e84393"
+      },
+      "position": [
+        5.619999885559082,
+        0.6600000262260437,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.12,
+        1.32,
+        0.52
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-domino",
+        "index": 16
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.32,
+        "restitution": 0.02,
+        "friction": 0.85,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.66,
+          0.26
+        ],
+        "initialTransform": {
+          "position": [
+            5.62,
+            0.66,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            0.12,
+            1.32,
+            0.52
+          ]
+        }
+      }
+    },
+    {
+      "id": "end-stop",
+      "name": "End Stop",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#5c6470"
+      },
+      "position": [
+        6.55,
+        0.45,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.25,
+        0.9,
+        1
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "physics-demo-end-stop"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "static",
+        "shape": "box",
+        "mass": 0,
+        "restitution": 0.05,
+        "friction": 0.8,
+        "halfExtents": [
+          0.125,
+          0.45,
+          0.5
+        ]
+      }
+    },
+    {
+      "id": "title",
+      "name": "Title",
+      "asset": {
+        "type": "text",
+        "source": "inline",
+        "format": "plain",
+        "fontFamily": "system-sans",
+        "fontSize": 36,
+        "fontWeight": "bold",
+        "fontStyle": "normal",
+        "color": "#ffffff",
+        "backgroundColor": "rgba(0,0,0,0.35)",
+        "align": "center",
+        "layout": {
+          "version": 1,
+          "width": 4.8,
+          "height": 1,
+          "padding": 0.12,
+          "lineHeight": 1.25,
+          "mode": "scroll"
+        },
+        "scroll": {
+          "y": 0
+        },
+        "text": "Domino Ramp Demo\nBall rolls down the ramp and knocks over the dominoes."
+      },
+      "position": [
+        1.5,
+        2.2,
+        -1.35
+      ],
+      "rotation": [
+        -0.10452846326765347,
+        0,
+        0,
+        0.9945218953682733
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "label"
+      }
+    }
+  ],
+  "skybox": {
+    "type": "env",
+    "envId": "outdoor_day",
+    "asset": {
+      "path": "assets/env.hdr"
+    }
+  },
+  "bgm": null,
+  "title": "Domino",
+  "physics": {
+    "version": 1,
+    "enabled": true,
+    "duration": 8,
+    "worldOptions": {
+      "gravity": -9.81,
+      "ground": null,
+      "timestep": 0.016666666666666666
+    }
+  }
+}
