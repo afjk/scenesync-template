@@ -1,0 +1,5011 @@
+{
+  "format": "scene-sync-export-scene",
+  "version": 2,
+  "units": "meters",
+  "title": "Physics Toy Box: Tap + Push Buttons",
+  "description": "Player Shellで遊ぶScene Sync物理おもちゃ。指/マウスのタップで光るTAPパッドを追加し、押せているか分かるようにした版。物理ボタン、Ball Drop、Domino、Gravity Toy、Goal演出を含む。",
+  "tags": [
+    "Scene Sync",
+    "Rapier",
+    "Loomlet",
+    "Physics",
+    "Toy",
+    "Player Shell",
+    "Tap"
+  ],
+  "author": "ChatGPT for afjk",
+  "loomletRuntime": {
+    "package": "com.afjk.loomlet-runtime",
+    "version": "0.3.0"
+  },
+  "objects": [
+    {
+      "id": "toybox-floor",
+      "name": "Toy Box Floor",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#2d3344"
+      },
+      "position": [
+        0.0,
+        -0.05,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        12.0,
+        0.1,
+        8.0
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "floor"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "static",
+        "shape": "box",
+        "mass": 0,
+        "restitution": 0.15,
+        "friction": 0.85,
+        "halfExtents": [
+          6,
+          0.05,
+          4
+        ]
+      }
+    },
+    {
+      "id": "toybox-back-wall",
+      "name": "Back Wall",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#293047"
+      },
+      "position": [
+        0.0,
+        1.0,
+        -3.95
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        12.0,
+        2.0,
+        0.1
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "static",
+        "shape": "box",
+        "mass": 0,
+        "restitution": 0.15,
+        "friction": 0.8,
+        "halfExtents": [
+          6,
+          1,
+          0.05
+        ]
+      }
+    },
+    {
+      "id": "toybox-left-wall",
+      "name": "Left Wall",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#293047"
+      },
+      "position": [
+        -5.95,
+        1.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.1,
+        2.0,
+        8.0
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "static",
+        "shape": "box",
+        "mass": 0,
+        "restitution": 0.15,
+        "friction": 0.8,
+        "halfExtents": [
+          0.05,
+          1,
+          4
+        ]
+      }
+    },
+    {
+      "id": "toybox-right-wall",
+      "name": "Right Wall",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#293047"
+      },
+      "position": [
+        5.95,
+        1.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.1,
+        2.0,
+        8.0
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "static",
+        "shape": "box",
+        "mass": 0,
+        "restitution": 0.15,
+        "friction": 0.8,
+        "halfExtents": [
+          0.05,
+          1,
+          4
+        ]
+      }
+    },
+    {
+      "id": "toybox-front-rail",
+      "name": "Front Safety Rail",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#38425e"
+      },
+      "position": [
+        0.0,
+        0.25,
+        3.95
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        12.0,
+        0.5,
+        0.1
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "static",
+        "shape": "box",
+        "mass": 0,
+        "restitution": 0.15,
+        "friction": 0.8,
+        "halfExtents": [
+          6,
+          0.25,
+          0.05
+        ]
+      }
+    },
+    {
+      "id": "button-ball-base",
+      "name": "BALL DROP Button Base",
+      "asset": {
+        "type": "primitive",
+        "primitive": "cylinder",
+        "color": "#161b29"
+      },
+      "position": [
+        -3.5,
+        0.08,
+        2.45
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.2,
+        0.16,
+        1.2
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "static",
+        "shape": "box",
+        "mass": 0,
+        "restitution": 0.15,
+        "friction": 0.9,
+        "halfExtents": [
+          0.6,
+          0.08,
+          0.6
+        ]
+      }
+    },
+    {
+      "id": "button-ball",
+      "name": "BALL DROP Button",
+      "asset": {
+        "type": "primitive",
+        "primitive": "cylinder",
+        "color": "#2f8cff"
+      },
+      "position": [
+        -3.5,
+        0.28,
+        2.45
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.86,
+        0.28,
+        0.86
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "player-shell-button",
+        "hint": "Player Shellで押せる軽めの物理ボタン。指/マウスなら上のTAPパッドをタップすると反応が見える。"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 1.2,
+        "restitution": 0.02,
+        "friction": 0.9,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.43,
+          0.14,
+          0.43
+        ],
+        "linearDamping": 7,
+        "angularDamping": 8
+      }
+    },
+    {
+      "id": "button-ball-label",
+      "name": "BALL DROP Button Label",
+      "asset": {
+        "type": "text",
+        "source": "inline",
+        "format": "plain",
+        "fontFamily": "japanese-sans",
+        "fontSize": 42,
+        "fontWeight": "700",
+        "fontStyle": "normal",
+        "color": "#ffffff",
+        "backgroundColor": "rgba(12,16,26,0.72)",
+        "align": "center",
+        "text": "BALL\nDROP",
+        "layout": {
+          "width": 2.0,
+          "height": 0.9,
+          "padding": 0.12,
+          "lineHeight": 1.18
+        }
+      },
+      "position": [
+        -4.12,
+        0.72,
+        2.13
+      ],
+      "rotation": [
+        -0.70710678,
+        0.0,
+        0.0,
+        0.70710678
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "instruction-label"
+      }
+    },
+    {
+      "id": "button-domino-base",
+      "name": "DOMINO Button Base",
+      "asset": {
+        "type": "primitive",
+        "primitive": "cylinder",
+        "color": "#161b29"
+      },
+      "position": [
+        0.0,
+        0.08,
+        2.45
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.2,
+        0.16,
+        1.2
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "static",
+        "shape": "box",
+        "mass": 0,
+        "restitution": 0.15,
+        "friction": 0.9,
+        "halfExtents": [
+          0.6,
+          0.08,
+          0.6
+        ]
+      }
+    },
+    {
+      "id": "button-domino",
+      "name": "DOMINO Button",
+      "asset": {
+        "type": "primitive",
+        "primitive": "cylinder",
+        "color": "#ffb02e"
+      },
+      "position": [
+        0.0,
+        0.28,
+        2.45
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.86,
+        0.28,
+        0.86
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "player-shell-button",
+        "hint": "Player Shellで押せる軽めの物理ボタン。指/マウスなら上のTAPパッドをタップすると反応が見える。"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 1.2,
+        "restitution": 0.02,
+        "friction": 0.9,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.43,
+          0.14,
+          0.43
+        ],
+        "linearDamping": 7,
+        "angularDamping": 8
+      }
+    },
+    {
+      "id": "button-domino-label",
+      "name": "DOMINO Button Label",
+      "asset": {
+        "type": "text",
+        "source": "inline",
+        "format": "plain",
+        "fontFamily": "japanese-sans",
+        "fontSize": 42,
+        "fontWeight": "700",
+        "fontStyle": "normal",
+        "color": "#ffffff",
+        "backgroundColor": "rgba(12,16,26,0.72)",
+        "align": "center",
+        "text": "DOMINO\nSTART",
+        "layout": {
+          "width": 2.0,
+          "height": 0.9,
+          "padding": 0.12,
+          "lineHeight": 1.18
+        }
+      },
+      "position": [
+        -0.62,
+        0.72,
+        2.13
+      ],
+      "rotation": [
+        -0.70710678,
+        0.0,
+        0.0,
+        0.70710678
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "instruction-label"
+      }
+    },
+    {
+      "id": "button-gravity-base",
+      "name": "GRAVITY Button Base",
+      "asset": {
+        "type": "primitive",
+        "primitive": "cylinder",
+        "color": "#161b29"
+      },
+      "position": [
+        3.5,
+        0.08,
+        2.45
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.2,
+        0.16,
+        1.2
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "static",
+        "shape": "box",
+        "mass": 0,
+        "restitution": 0.15,
+        "friction": 0.9,
+        "halfExtents": [
+          0.6,
+          0.08,
+          0.6
+        ]
+      }
+    },
+    {
+      "id": "button-gravity",
+      "name": "GRAVITY Button",
+      "asset": {
+        "type": "primitive",
+        "primitive": "cylinder",
+        "color": "#b36bff"
+      },
+      "position": [
+        3.5,
+        0.28,
+        2.45
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.86,
+        0.28,
+        0.86
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "player-shell-button",
+        "hint": "Player Shellで押せる軽めの物理ボタン。指/マウスなら上のTAPパッドをタップすると反応が見える。"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 1.2,
+        "restitution": 0.02,
+        "friction": 0.9,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.43,
+          0.14,
+          0.43
+        ],
+        "linearDamping": 7,
+        "angularDamping": 8
+      }
+    },
+    {
+      "id": "button-gravity-label",
+      "name": "GRAVITY Button Label",
+      "asset": {
+        "type": "text",
+        "source": "inline",
+        "format": "plain",
+        "fontFamily": "japanese-sans",
+        "fontSize": 42,
+        "fontWeight": "700",
+        "fontStyle": "normal",
+        "color": "#ffffff",
+        "backgroundColor": "rgba(12,16,26,0.72)",
+        "align": "center",
+        "text": "GRAVITY\nTOY",
+        "layout": {
+          "width": 2.0,
+          "height": 0.9,
+          "padding": 0.12,
+          "lineHeight": 1.18
+        }
+      },
+      "position": [
+        2.88,
+        0.72,
+        2.13
+      ],
+      "rotation": [
+        -0.70710678,
+        0.0,
+        0.0,
+        0.70710678
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "instruction-label"
+      }
+    },
+    {
+      "id": "ball-ramp-1",
+      "name": "Ball Drop Ramp",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#59677f"
+      },
+      "position": [
+        -3.7,
+        1.0,
+        -1.5
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        -0.10452846,
+        0.9945219
+      ],
+      "scale": [
+        3.6,
+        0.16,
+        0.9
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "static",
+        "shape": "box",
+        "mass": 0,
+        "restitution": 0.25,
+        "friction": 0.55,
+        "halfExtents": [
+          1.8,
+          0.08,
+          0.45
+        ]
+      }
+    },
+    {
+      "id": "ball-ramp-rail-l",
+      "name": "Ball Ramp Left Rail",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#76849f"
+      },
+      "position": [
+        -3.7,
+        1.24,
+        -2.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        -0.10452846,
+        0.9945219
+      ],
+      "scale": [
+        3.6,
+        0.18,
+        0.08
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "static",
+        "shape": "box",
+        "mass": 0,
+        "restitution": 0.15,
+        "friction": 0.8,
+        "halfExtents": [
+          1.8,
+          0.09,
+          0.04
+        ]
+      }
+    },
+    {
+      "id": "ball-ramp-rail-r",
+      "name": "Ball Ramp Right Rail",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#76849f"
+      },
+      "position": [
+        -3.7,
+        1.24,
+        -1.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        -0.10452846,
+        0.9945219
+      ],
+      "scale": [
+        3.6,
+        0.18,
+        0.08
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "static",
+        "shape": "box",
+        "mass": 0,
+        "restitution": 0.15,
+        "friction": 0.8,
+        "halfExtents": [
+          1.8,
+          0.09,
+          0.04
+        ]
+      }
+    },
+    {
+      "id": "ball-start-gate",
+      "name": "Ball Start Gate",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#e74c3c"
+      },
+      "position": [
+        -5.18,
+        1.46,
+        -1.5
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        -0.10452846,
+        0.9945219
+      ],
+      "scale": [
+        0.16,
+        0.9,
+        1.1
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "push-gate",
+        "hint": "Player Shellで押してボールを解放する板"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 2,
+        "restitution": 0.2,
+        "friction": 0.5,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.08,
+          0.45,
+          0.55
+        ],
+        "linearDamping": 1.5,
+        "angularDamping": 1.5
+      }
+    },
+    {
+      "id": "ball-drop-ball-1",
+      "name": "Ball Drop Ball 1",
+      "asset": {
+        "type": "primitive",
+        "primitive": "sphere",
+        "color": "#5be7ff"
+      },
+      "position": [
+        -4.85,
+        1.65,
+        -1.5
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "sphere",
+        "mass": 0.6,
+        "restitution": 0.6,
+        "friction": 0.45,
+        "velocity": [
+          0.15,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "linearDamping": 0.03,
+        "angularDamping": 0.02,
+        "radius": 0.21,
+        "ccd": true
+      }
+    },
+    {
+      "id": "ball-drop-ball-2",
+      "name": "Ball Drop Ball 2",
+      "asset": {
+        "type": "primitive",
+        "primitive": "sphere",
+        "color": "#8ff05b"
+      },
+      "position": [
+        -4.47,
+        1.65,
+        -1.5
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "sphere",
+        "mass": 0.6,
+        "restitution": 0.6,
+        "friction": 0.45,
+        "velocity": [
+          0.3,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "linearDamping": 0.03,
+        "angularDamping": 0.02,
+        "radius": 0.21,
+        "ccd": true
+      }
+    },
+    {
+      "id": "ball-drop-ball-3",
+      "name": "Ball Drop Ball 3",
+      "asset": {
+        "type": "primitive",
+        "primitive": "sphere",
+        "color": "#ffd65b"
+      },
+      "position": [
+        -4.09,
+        1.65,
+        -1.5
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "sphere",
+        "mass": 0.6,
+        "restitution": 0.6,
+        "friction": 0.45,
+        "velocity": [
+          0.44999999999999996,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "linearDamping": 0.03,
+        "angularDamping": 0.02,
+        "radius": 0.21,
+        "ccd": true
+      }
+    },
+    {
+      "id": "ball-drop-ball-4",
+      "name": "Ball Drop Ball 4",
+      "asset": {
+        "type": "primitive",
+        "primitive": "sphere",
+        "color": "#ff6d91"
+      },
+      "position": [
+        -3.71,
+        1.65,
+        -1.5
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "sphere",
+        "mass": 0.6,
+        "restitution": 0.6,
+        "friction": 0.45,
+        "velocity": [
+          0.6,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "linearDamping": 0.03,
+        "angularDamping": 0.02,
+        "radius": 0.21,
+        "ccd": true
+      }
+    },
+    {
+      "id": "domino-lane-base",
+      "name": "Domino Lane Base",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#39425a"
+      },
+      "position": [
+        0.0,
+        0.03,
+        -1.35
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        4.2,
+        0.06,
+        1.15
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "static",
+        "shape": "box",
+        "mass": 0,
+        "restitution": 0.15,
+        "friction": 0.8,
+        "halfExtents": [
+          2.1,
+          0.03,
+          0.575
+        ]
+      }
+    },
+    {
+      "id": "domino-start-ball",
+      "name": "Domino Start Ball",
+      "asset": {
+        "type": "primitive",
+        "primitive": "sphere",
+        "color": "#ff5f7a"
+      },
+      "position": [
+        -2.15,
+        0.36,
+        -1.35
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.46,
+        0.46,
+        0.46
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "push-me",
+        "hint": "Player Shellで押すとドミノ列へ転がる"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "sphere",
+        "mass": 0.9,
+        "restitution": 0.45,
+        "friction": 0.45,
+        "velocity": [
+          0.35,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "linearDamping": 0.03,
+        "angularDamping": 0.02,
+        "radius": 0.23,
+        "ccd": true
+      }
+    },
+    {
+      "id": "domino-01",
+      "name": "Domino 01",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#f2c94c"
+      },
+      "position": [
+        -1.3,
+        0.47,
+        -1.35
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.12,
+        0.9,
+        0.42
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "domino"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.35,
+        "restitution": 0.18,
+        "friction": 0.68,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.45,
+          0.21
+        ],
+        "angularDamping": 0.2
+      }
+    },
+    {
+      "id": "domino-02",
+      "name": "Domino 02",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#f2994a"
+      },
+      "position": [
+        -0.98,
+        0.47,
+        -1.35
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.12,
+        0.9,
+        0.42
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "domino"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.35,
+        "restitution": 0.18,
+        "friction": 0.68,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.45,
+          0.21
+        ],
+        "angularDamping": 0.2
+      }
+    },
+    {
+      "id": "domino-03",
+      "name": "Domino 03",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#f2c94c"
+      },
+      "position": [
+        -0.66,
+        0.47,
+        -1.35
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.12,
+        0.9,
+        0.42
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "domino"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.35,
+        "restitution": 0.18,
+        "friction": 0.68,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.45,
+          0.21
+        ],
+        "angularDamping": 0.2
+      }
+    },
+    {
+      "id": "domino-04",
+      "name": "Domino 04",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#f2994a"
+      },
+      "position": [
+        -0.34,
+        0.47,
+        -1.35
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.12,
+        0.9,
+        0.42
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "domino"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.35,
+        "restitution": 0.18,
+        "friction": 0.68,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.45,
+          0.21
+        ],
+        "angularDamping": 0.2
+      }
+    },
+    {
+      "id": "domino-05",
+      "name": "Domino 05",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#f2c94c"
+      },
+      "position": [
+        -0.02,
+        0.47,
+        -1.35
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.12,
+        0.9,
+        0.42
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "domino"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.35,
+        "restitution": 0.18,
+        "friction": 0.68,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.45,
+          0.21
+        ],
+        "angularDamping": 0.2
+      }
+    },
+    {
+      "id": "domino-06",
+      "name": "Domino 06",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#f2994a"
+      },
+      "position": [
+        0.3,
+        0.47,
+        -1.35
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.12,
+        0.9,
+        0.42
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "domino"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.35,
+        "restitution": 0.18,
+        "friction": 0.68,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.45,
+          0.21
+        ],
+        "angularDamping": 0.2
+      }
+    },
+    {
+      "id": "domino-07",
+      "name": "Domino 07",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#f2c94c"
+      },
+      "position": [
+        0.62,
+        0.47,
+        -1.35
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.12,
+        0.9,
+        0.42
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "domino"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.35,
+        "restitution": 0.18,
+        "friction": 0.68,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.45,
+          0.21
+        ],
+        "angularDamping": 0.2
+      }
+    },
+    {
+      "id": "domino-08",
+      "name": "Domino 08",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#f2994a"
+      },
+      "position": [
+        0.94,
+        0.47,
+        -1.35
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.12,
+        0.9,
+        0.42
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "domino"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.35,
+        "restitution": 0.18,
+        "friction": 0.68,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.45,
+          0.21
+        ],
+        "angularDamping": 0.2
+      }
+    },
+    {
+      "id": "domino-09",
+      "name": "Domino 09",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#f2c94c"
+      },
+      "position": [
+        1.26,
+        0.47,
+        -1.35
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.12,
+        0.9,
+        0.42
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "domino"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.35,
+        "restitution": 0.18,
+        "friction": 0.68,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.45,
+          0.21
+        ],
+        "angularDamping": 0.2
+      }
+    },
+    {
+      "id": "domino-10",
+      "name": "Domino 10",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#f2994a"
+      },
+      "position": [
+        1.58,
+        0.47,
+        -1.35
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.12,
+        0.9,
+        0.42
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "domino"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.35,
+        "restitution": 0.18,
+        "friction": 0.68,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.06,
+          0.45,
+          0.21
+        ],
+        "angularDamping": 0.2
+      }
+    },
+    {
+      "id": "gravity-platform",
+      "name": "Gravity Toy Platform",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#4a5067"
+      },
+      "position": [
+        3.45,
+        0.04,
+        -1.45
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        3.2,
+        0.08,
+        1.5
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "static",
+        "shape": "box",
+        "mass": 0,
+        "restitution": 0.15,
+        "friction": 0.75,
+        "halfExtents": [
+          1.6,
+          0.04,
+          0.75
+        ]
+      }
+    },
+    {
+      "id": "gravity-orb",
+      "name": "Gravity Pulse Orb",
+      "asset": {
+        "type": "primitive",
+        "primitive": "sphere",
+        "color": "#b36bff"
+      },
+      "position": [
+        2.45,
+        0.68,
+        -1.45
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.72,
+        0.72,
+        0.72
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "loomlet-pulse"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "sphere",
+        "mass": 1.3,
+        "restitution": 0.7,
+        "friction": 0.45,
+        "velocity": [
+          0.4,
+          0,
+          0.15
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "linearDamping": 0.03,
+        "angularDamping": 0.02,
+        "radius": 0.36,
+        "ccd": true
+      }
+    },
+    {
+      "id": "gravity-cube-1",
+      "name": "Gravity Cube 1",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#9aa6c8"
+      },
+      "position": [
+        3.2,
+        0.34,
+        -1.7
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.38,
+        0.38,
+        0.38
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.45,
+        "restitution": 0.38,
+        "friction": 0.55,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.19,
+          0.19,
+          0.19
+        ],
+        "angularDamping": 0.1
+      }
+    },
+    {
+      "id": "gravity-cube-2",
+      "name": "Gravity Cube 2",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#9aa6c8"
+      },
+      "position": [
+        3.65,
+        0.34,
+        -1.25
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.38,
+        0.38,
+        0.38
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.45,
+        "restitution": 0.38,
+        "friction": 0.55,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.19,
+          0.19,
+          0.19
+        ],
+        "angularDamping": 0.1
+      }
+    },
+    {
+      "id": "gravity-cube-3",
+      "name": "Gravity Cube 3",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#9aa6c8"
+      },
+      "position": [
+        4.1,
+        0.34,
+        -1.7
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.38,
+        0.38,
+        0.38
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.45,
+        "restitution": 0.38,
+        "friction": 0.55,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.19,
+          0.19,
+          0.19
+        ],
+        "angularDamping": 0.1
+      }
+    },
+    {
+      "id": "gravity-cube-4",
+      "name": "Gravity Cube 4",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#9aa6c8"
+      },
+      "position": [
+        3.2,
+        0.78,
+        -1.25
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.38,
+        0.38,
+        0.38
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.45,
+        "restitution": 0.38,
+        "friction": 0.55,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.19,
+          0.19,
+          0.19
+        ],
+        "angularDamping": 0.1
+      }
+    },
+    {
+      "id": "gravity-cube-5",
+      "name": "Gravity Cube 5",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#9aa6c8"
+      },
+      "position": [
+        3.65,
+        0.78,
+        -1.7
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.38,
+        0.38,
+        0.38
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.45,
+        "restitution": 0.38,
+        "friction": 0.55,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.19,
+          0.19,
+          0.19
+        ],
+        "angularDamping": 0.1
+      }
+    },
+    {
+      "id": "gravity-cube-6",
+      "name": "Gravity Cube 6",
+      "asset": {
+        "type": "primitive",
+        "primitive": "box",
+        "color": "#9aa6c8"
+      },
+      "position": [
+        4.1,
+        0.78,
+        -1.25
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.38,
+        0.38,
+        0.38
+      ],
+      "visible": true,
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "dynamic",
+        "shape": "box",
+        "mass": 0.45,
+        "restitution": 0.38,
+        "friction": 0.55,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.19,
+          0.19,
+          0.19
+        ],
+        "angularDamping": 0.1
+      }
+    },
+    {
+      "id": "goal-pad",
+      "name": "Goal Pad",
+      "asset": {
+        "type": "primitive",
+        "primitive": "cylinder",
+        "color": "#27d17f"
+      },
+      "position": [
+        0.0,
+        0.05,
+        -3.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.7,
+        0.1,
+        1.7
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "goal"
+      },
+      "physics": {
+        "version": 1,
+        "enabled": true,
+        "bodyType": "static",
+        "shape": "box",
+        "mass": 0,
+        "restitution": 0.15,
+        "friction": 0.8,
+        "halfExtents": [
+          0.85,
+          0.05,
+          0.85
+        ]
+      }
+    },
+    {
+      "id": "goal-ring",
+      "name": "Goal Ring",
+      "asset": {
+        "type": "primitive",
+        "primitive": "torus",
+        "color": "#32ff9a"
+      },
+      "position": [
+        0.0,
+        0.72,
+        -3.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.3,
+        1.3,
+        1.3
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "loomlet-goal-ring"
+      }
+    },
+    {
+      "id": "goal-label",
+      "name": "Goal Label",
+      "asset": {
+        "type": "text",
+        "source": "inline",
+        "format": "plain",
+        "fontFamily": "japanese-sans",
+        "fontSize": 40,
+        "fontWeight": "700",
+        "fontStyle": "normal",
+        "color": "#ffffff",
+        "backgroundColor": "rgba(19,89,55,0.72)",
+        "align": "center",
+        "text": "GOAL\nここにボールを集める",
+        "layout": {
+          "width": 2.2,
+          "height": 0.9,
+          "padding": 0.12,
+          "lineHeight": 1.18
+        }
+      },
+      "position": [
+        0.0,
+        1.25,
+        -3.05
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.62,
+        0.62,
+        0.62
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "instruction-label"
+      }
+    },
+    {
+      "id": "goal-spark-1",
+      "name": "Goal Spark 1",
+      "asset": {
+        "type": "primitive",
+        "primitive": "sphere",
+        "color": "#ff4d4d"
+      },
+      "position": [
+        -0.75,
+        1.35,
+        -2.65
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.18,
+        0.18,
+        0.18
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "loomlet-spark"
+      }
+    },
+    {
+      "id": "goal-spark-2",
+      "name": "Goal Spark 2",
+      "asset": {
+        "type": "primitive",
+        "primitive": "sphere",
+        "color": "#ffd34d"
+      },
+      "position": [
+        -0.35,
+        1.35,
+        -3.45
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.18,
+        0.18,
+        0.18
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "loomlet-spark"
+      }
+    },
+    {
+      "id": "goal-spark-3",
+      "name": "Goal Spark 3",
+      "asset": {
+        "type": "primitive",
+        "primitive": "sphere",
+        "color": "#55ddff"
+      },
+      "position": [
+        0.35,
+        1.35,
+        -2.55
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.18,
+        0.18,
+        0.18
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "loomlet-spark"
+      }
+    },
+    {
+      "id": "goal-spark-4",
+      "name": "Goal Spark 4",
+      "asset": {
+        "type": "primitive",
+        "primitive": "sphere",
+        "color": "#cc77ff"
+      },
+      "position": [
+        0.82,
+        1.35,
+        -3.32
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        0.18,
+        0.18,
+        0.18
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "loomlet-spark"
+      }
+    },
+    {
+      "id": "title-panel",
+      "name": "Title Panel",
+      "asset": {
+        "type": "text",
+        "source": "inline",
+        "format": "plain",
+        "fontFamily": "japanese-sans",
+        "fontSize": 46,
+        "fontWeight": "700",
+        "fontStyle": "normal",
+        "color": "#ffffff",
+        "backgroundColor": "rgba(8,10,18,0.72)",
+        "align": "center",
+        "text": "Physics Toy Box\nPlayer Shellで押して遊ぶ",
+        "layout": {
+          "width": 4.7,
+          "height": 1.15,
+          "padding": 0.12,
+          "lineHeight": 1.18
+        }
+      },
+      "position": [
+        0.0,
+        1.75,
+        3.72
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "instruction-label"
+      }
+    },
+    {
+      "id": "howto-panel",
+      "name": "How To Panel",
+      "asset": {
+        "type": "text",
+        "source": "inline",
+        "format": "plain",
+        "fontFamily": "japanese-sans",
+        "fontSize": 34,
+        "fontWeight": "700",
+        "fontStyle": "normal",
+        "color": "#ffffff",
+        "backgroundColor": "rgba(8,10,18,0.68)",
+        "align": "center",
+        "text": "1. Player Shellでボタン/球/ドミノを押す\n2. PlayerのPlayで物理を再生\n3. Stopで先頭に戻す",
+        "layout": {
+          "width": 4.0,
+          "height": 1.25,
+          "padding": 0.12,
+          "lineHeight": 1.18
+        }
+      },
+      "position": [
+        -3.4,
+        1.35,
+        3.55
+      ],
+      "rotation": [
+        0.0,
+        0.06975647,
+        0.0,
+        0.99756405
+      ],
+      "scale": [
+        0.78,
+        0.78,
+        0.78
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "instruction-label"
+      }
+    },
+    {
+      "id": "loomlet-panel",
+      "name": "Loomlet Panel",
+      "asset": {
+        "type": "text",
+        "source": "inline",
+        "format": "plain",
+        "fontFamily": "japanese-sans",
+        "fontSize": 34,
+        "fontWeight": "700",
+        "fontStyle": "normal",
+        "color": "#ffffff",
+        "backgroundColor": "rgba(40,18,72,0.68)",
+        "align": "center",
+        "text": "Loomlet入り:\nボタン/ゴール/スパークが\n色・位置・スケールで反応",
+        "layout": {
+          "width": 3.7,
+          "height": 1.25,
+          "padding": 0.12,
+          "lineHeight": 1.18
+        }
+      },
+      "position": [
+        3.4,
+        1.35,
+        3.55
+      ],
+      "rotation": [
+        0.0,
+        -0.06975647,
+        0.0,
+        0.99756405
+      ],
+      "scale": [
+        0.78,
+        0.78,
+        0.78
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "instruction-label"
+      }
+    },
+    {
+      "id": "button-ball-tap-pad",
+      "name": "BALL DROP Tap Pad",
+      "asset": {
+        "type": "primitive",
+        "primitive": "cylinder",
+        "color": "#2f8cff"
+      },
+      "position": [
+        -3.5,
+        0.54,
+        2.45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.22,
+        0.075,
+        1.22
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "player-shell-tap-button",
+        "hint": "Player Shell / 指 / マウスでタップするとLoomletのpointer.clickで光って少し膨らむ確認用パッド"
+      }
+    },
+    {
+      "id": "button-ball-tap-lamp",
+      "name": "BALL DROP Tap Lamp",
+      "asset": {
+        "type": "primitive",
+        "primitive": "sphere",
+        "color": "#2f8cff"
+      },
+      "position": [
+        -3.5,
+        1.05,
+        1.64
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.34,
+        0.34,
+        0.34
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "tap-feedback-lamp",
+        "hint": "タップ確認用のランプ。通常はゆっくり点滅。"
+      }
+    },
+    {
+      "id": "button-ball-tap-label",
+      "name": "BALL DROP Tap Label",
+      "asset": {
+        "type": "text",
+        "source": "inline",
+        "format": "plain",
+        "fontFamily": "japanese-sans",
+        "fontSize": 34,
+        "fontWeight": "700",
+        "fontStyle": "normal",
+        "color": "#ffffff",
+        "backgroundColor": "rgba(8,11,20,0.82)",
+        "align": "center",
+        "text": "TAP\nBALL DROP",
+        "layout": {
+          "width": 1.8,
+          "height": 0.74,
+          "padding": 0.1,
+          "lineHeight": 1.15
+        }
+      },
+      "position": [
+        -4.04,
+        0.88,
+        2.06
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.36,
+        0.36,
+        0.36
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "tap-instruction-label"
+      }
+    },
+    {
+      "id": "button-domino-tap-pad",
+      "name": "DOMINO Tap Pad",
+      "asset": {
+        "type": "primitive",
+        "primitive": "cylinder",
+        "color": "#ffb02e"
+      },
+      "position": [
+        0.0,
+        0.54,
+        2.45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.22,
+        0.075,
+        1.22
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "player-shell-tap-button",
+        "hint": "Player Shell / 指 / マウスでタップするとLoomletのpointer.clickで光って少し膨らむ確認用パッド"
+      }
+    },
+    {
+      "id": "button-domino-tap-lamp",
+      "name": "DOMINO Tap Lamp",
+      "asset": {
+        "type": "primitive",
+        "primitive": "sphere",
+        "color": "#ffb02e"
+      },
+      "position": [
+        0.0,
+        1.05,
+        1.64
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.34,
+        0.34,
+        0.34
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "tap-feedback-lamp",
+        "hint": "タップ確認用のランプ。通常はゆっくり点滅。"
+      }
+    },
+    {
+      "id": "button-domino-tap-label",
+      "name": "DOMINO Tap Label",
+      "asset": {
+        "type": "text",
+        "source": "inline",
+        "format": "plain",
+        "fontFamily": "japanese-sans",
+        "fontSize": 34,
+        "fontWeight": "700",
+        "fontStyle": "normal",
+        "color": "#ffffff",
+        "backgroundColor": "rgba(8,11,20,0.82)",
+        "align": "center",
+        "text": "TAP\nDOMINO",
+        "layout": {
+          "width": 1.8,
+          "height": 0.74,
+          "padding": 0.1,
+          "lineHeight": 1.15
+        }
+      },
+      "position": [
+        -0.54,
+        0.88,
+        2.06
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.36,
+        0.36,
+        0.36
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "tap-instruction-label"
+      }
+    },
+    {
+      "id": "button-gravity-tap-pad",
+      "name": "GRAVITY Tap Pad",
+      "asset": {
+        "type": "primitive",
+        "primitive": "cylinder",
+        "color": "#9a5cff"
+      },
+      "position": [
+        3.5,
+        0.54,
+        2.45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.22,
+        0.075,
+        1.22
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "player-shell-tap-button",
+        "hint": "Player Shell / 指 / マウスでタップするとLoomletのpointer.clickで光って少し膨らむ確認用パッド"
+      }
+    },
+    {
+      "id": "button-gravity-tap-lamp",
+      "name": "GRAVITY Tap Lamp",
+      "asset": {
+        "type": "primitive",
+        "primitive": "sphere",
+        "color": "#9a5cff"
+      },
+      "position": [
+        3.5,
+        1.05,
+        1.64
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.34,
+        0.34,
+        0.34
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "tap-feedback-lamp",
+        "hint": "タップ確認用のランプ。通常はゆっくり点滅。"
+      }
+    },
+    {
+      "id": "button-gravity-tap-label",
+      "name": "GRAVITY Tap Label",
+      "asset": {
+        "type": "text",
+        "source": "inline",
+        "format": "plain",
+        "fontFamily": "japanese-sans",
+        "fontSize": 34,
+        "fontWeight": "700",
+        "fontStyle": "normal",
+        "color": "#ffffff",
+        "backgroundColor": "rgba(8,11,20,0.82)",
+        "align": "center",
+        "text": "TAP\nGRAVITY",
+        "layout": {
+          "width": 1.8,
+          "height": 0.74,
+          "padding": 0.1,
+          "lineHeight": 1.15
+        }
+      },
+      "position": [
+        2.96,
+        0.88,
+        2.06
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.36,
+        0.36,
+        0.36
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "tap-instruction-label"
+      }
+    },
+    {
+      "id": "tap-help-title",
+      "name": "Tap Help Title",
+      "asset": {
+        "type": "text",
+        "source": "inline",
+        "format": "plain",
+        "fontFamily": "japanese-sans",
+        "fontSize": 38,
+        "fontWeight": "700",
+        "fontStyle": "normal",
+        "color": "#ffffff",
+        "backgroundColor": "rgba(20,30,52,0.84)",
+        "align": "center",
+        "text": "TAP REACTION MODE",
+        "layout": {
+          "width": 3.2,
+          "height": 0.42,
+          "padding": 0.1,
+          "lineHeight": 1.15
+        }
+      },
+      "position": [
+        -1.85,
+        1.72,
+        3.15
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.52,
+        0.52,
+        0.52
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "tap-instruction-label"
+      }
+    },
+    {
+      "id": "tap-help-body",
+      "name": "Tap Help Body",
+      "asset": {
+        "type": "text",
+        "source": "inline",
+        "format": "plain",
+        "fontFamily": "japanese-sans",
+        "fontSize": 30,
+        "fontWeight": "700",
+        "fontStyle": "normal",
+        "color": "#ffffff",
+        "backgroundColor": "rgba(8,12,22,0.78)",
+        "align": "center",
+        "text": "1. 上のTAPパッドを指/マウスでタップ\n2. パッドとランプが一瞬光る\n3. Playで物理ボタン/ボール/ドミノを見る",
+        "layout": {
+          "width": 4.8,
+          "height": 1.05,
+          "padding": 0.1,
+          "lineHeight": 1.15
+        }
+      },
+      "position": [
+        1.25,
+        1.62,
+        3.05
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ],
+      "visible": true,
+      "metadata": {
+        "role": "tap-instruction-label"
+      }
+    }
+  ],
+  "skybox": null,
+  "bgm": null,
+  "behaviors": {
+    "scene": null,
+    "objects": {
+      "button-ball": {
+        "nodes": [
+          {
+            "id": "click",
+            "type": "onEvent",
+            "params": {
+              "channel": "pointer.click"
+            }
+          },
+          {
+            "id": "clickCount",
+            "type": "list.length"
+          },
+          {
+            "id": "zero",
+            "type": "constant",
+            "params": {
+              "value": 0
+            }
+          },
+          {
+            "id": "clicked",
+            "type": "logic.greaterThan"
+          },
+          {
+            "id": "rise",
+            "type": "constant",
+            "params": {
+              "value": 90
+            }
+          },
+          {
+            "id": "fall",
+            "type": "constant",
+            "params": {
+              "value": -2.8
+            }
+          },
+          {
+            "id": "drive",
+            "type": "logic.select"
+          },
+          {
+            "id": "press",
+            "type": "integrate",
+            "params": {
+              "initial": 0,
+              "min": 0,
+              "max": 1
+            }
+          },
+          {
+            "id": "rboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.88
+            }
+          },
+          {
+            "id": "rout",
+            "type": "add",
+            "params": {
+              "b": 0.12
+            }
+          },
+          {
+            "id": "gboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.5800000000000001
+            }
+          },
+          {
+            "id": "gout",
+            "type": "add",
+            "params": {
+              "b": 0.42
+            }
+          },
+          {
+            "id": "bboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.0
+            }
+          },
+          {
+            "id": "bout",
+            "type": "add",
+            "params": {
+              "b": 1.0
+            }
+          },
+          {
+            "id": "color",
+            "type": "sceneSetColor"
+          },
+          {
+            "id": "sxboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.12
+            }
+          },
+          {
+            "id": "sxout",
+            "type": "add",
+            "params": {
+              "b": 0.86
+            }
+          },
+          {
+            "id": "syboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.03
+            }
+          },
+          {
+            "id": "syout",
+            "type": "add",
+            "params": {
+              "b": 0.28
+            }
+          },
+          {
+            "id": "szboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.12
+            }
+          },
+          {
+            "id": "szout",
+            "type": "add",
+            "params": {
+              "b": 0.86
+            }
+          },
+          {
+            "id": "scale",
+            "type": "sceneSetScale"
+          },
+          {
+            "id": "ybump",
+            "type": "multiply",
+            "params": {
+              "b": 0.16
+            }
+          },
+          {
+            "id": "offset",
+            "type": "sceneOffsetPosition",
+            "params": {
+              "x": 0,
+              "z": 0
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "click.event",
+            "to": "clickCount.list"
+          },
+          {
+            "from": "clickCount.out",
+            "to": "clicked.value"
+          },
+          {
+            "from": "zero.out",
+            "to": "clicked.other"
+          },
+          {
+            "from": "clicked.out",
+            "to": "drive.condition"
+          },
+          {
+            "from": "rise.out",
+            "to": "drive.whenTrue"
+          },
+          {
+            "from": "fall.out",
+            "to": "drive.whenFalse"
+          },
+          {
+            "from": "drive.out",
+            "to": "press.value"
+          },
+          {
+            "from": "press.out",
+            "to": "rboost.a"
+          },
+          {
+            "from": "rboost.out",
+            "to": "rout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "gboost.a"
+          },
+          {
+            "from": "gboost.out",
+            "to": "gout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "bboost.a"
+          },
+          {
+            "from": "bboost.out",
+            "to": "bout.a"
+          },
+          {
+            "from": "rout.out",
+            "to": "color.r"
+          },
+          {
+            "from": "gout.out",
+            "to": "color.g"
+          },
+          {
+            "from": "bout.out",
+            "to": "color.b"
+          },
+          {
+            "from": "press.out",
+            "to": "sxboost.a"
+          },
+          {
+            "from": "sxboost.out",
+            "to": "sxout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "syboost.a"
+          },
+          {
+            "from": "syboost.out",
+            "to": "syout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "szboost.a"
+          },
+          {
+            "from": "szboost.out",
+            "to": "szout.a"
+          },
+          {
+            "from": "sxout.out",
+            "to": "scale.x"
+          },
+          {
+            "from": "syout.out",
+            "to": "scale.y"
+          },
+          {
+            "from": "szout.out",
+            "to": "scale.z"
+          },
+          {
+            "from": "press.out",
+            "to": "ybump.a"
+          },
+          {
+            "from": "ybump.out",
+            "to": "offset.y"
+          }
+        ]
+      },
+      "button-domino": {
+        "nodes": [
+          {
+            "id": "click",
+            "type": "onEvent",
+            "params": {
+              "channel": "pointer.click"
+            }
+          },
+          {
+            "id": "clickCount",
+            "type": "list.length"
+          },
+          {
+            "id": "zero",
+            "type": "constant",
+            "params": {
+              "value": 0
+            }
+          },
+          {
+            "id": "clicked",
+            "type": "logic.greaterThan"
+          },
+          {
+            "id": "rise",
+            "type": "constant",
+            "params": {
+              "value": 90
+            }
+          },
+          {
+            "id": "fall",
+            "type": "constant",
+            "params": {
+              "value": -2.8
+            }
+          },
+          {
+            "id": "drive",
+            "type": "logic.select"
+          },
+          {
+            "id": "press",
+            "type": "integrate",
+            "params": {
+              "initial": 0,
+              "min": 0,
+              "max": 1
+            }
+          },
+          {
+            "id": "rboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.0
+            }
+          },
+          {
+            "id": "rout",
+            "type": "add",
+            "params": {
+              "b": 1.0
+            }
+          },
+          {
+            "id": "gboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.43999999999999995
+            }
+          },
+          {
+            "id": "gout",
+            "type": "add",
+            "params": {
+              "b": 0.56
+            }
+          },
+          {
+            "id": "bboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.86
+            }
+          },
+          {
+            "id": "bout",
+            "type": "add",
+            "params": {
+              "b": 0.14
+            }
+          },
+          {
+            "id": "color",
+            "type": "sceneSetColor"
+          },
+          {
+            "id": "sxboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.12
+            }
+          },
+          {
+            "id": "sxout",
+            "type": "add",
+            "params": {
+              "b": 0.86
+            }
+          },
+          {
+            "id": "syboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.03
+            }
+          },
+          {
+            "id": "syout",
+            "type": "add",
+            "params": {
+              "b": 0.28
+            }
+          },
+          {
+            "id": "szboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.12
+            }
+          },
+          {
+            "id": "szout",
+            "type": "add",
+            "params": {
+              "b": 0.86
+            }
+          },
+          {
+            "id": "scale",
+            "type": "sceneSetScale"
+          },
+          {
+            "id": "ybump",
+            "type": "multiply",
+            "params": {
+              "b": 0.16
+            }
+          },
+          {
+            "id": "offset",
+            "type": "sceneOffsetPosition",
+            "params": {
+              "x": 0,
+              "z": 0
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "click.event",
+            "to": "clickCount.list"
+          },
+          {
+            "from": "clickCount.out",
+            "to": "clicked.value"
+          },
+          {
+            "from": "zero.out",
+            "to": "clicked.other"
+          },
+          {
+            "from": "clicked.out",
+            "to": "drive.condition"
+          },
+          {
+            "from": "rise.out",
+            "to": "drive.whenTrue"
+          },
+          {
+            "from": "fall.out",
+            "to": "drive.whenFalse"
+          },
+          {
+            "from": "drive.out",
+            "to": "press.value"
+          },
+          {
+            "from": "press.out",
+            "to": "rboost.a"
+          },
+          {
+            "from": "rboost.out",
+            "to": "rout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "gboost.a"
+          },
+          {
+            "from": "gboost.out",
+            "to": "gout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "bboost.a"
+          },
+          {
+            "from": "bboost.out",
+            "to": "bout.a"
+          },
+          {
+            "from": "rout.out",
+            "to": "color.r"
+          },
+          {
+            "from": "gout.out",
+            "to": "color.g"
+          },
+          {
+            "from": "bout.out",
+            "to": "color.b"
+          },
+          {
+            "from": "press.out",
+            "to": "sxboost.a"
+          },
+          {
+            "from": "sxboost.out",
+            "to": "sxout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "syboost.a"
+          },
+          {
+            "from": "syboost.out",
+            "to": "syout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "szboost.a"
+          },
+          {
+            "from": "szboost.out",
+            "to": "szout.a"
+          },
+          {
+            "from": "sxout.out",
+            "to": "scale.x"
+          },
+          {
+            "from": "syout.out",
+            "to": "scale.y"
+          },
+          {
+            "from": "szout.out",
+            "to": "scale.z"
+          },
+          {
+            "from": "press.out",
+            "to": "ybump.a"
+          },
+          {
+            "from": "ybump.out",
+            "to": "offset.y"
+          }
+        ]
+      },
+      "button-gravity": {
+        "nodes": [
+          {
+            "id": "click",
+            "type": "onEvent",
+            "params": {
+              "channel": "pointer.click"
+            }
+          },
+          {
+            "id": "clickCount",
+            "type": "list.length"
+          },
+          {
+            "id": "zero",
+            "type": "constant",
+            "params": {
+              "value": 0
+            }
+          },
+          {
+            "id": "clicked",
+            "type": "logic.greaterThan"
+          },
+          {
+            "id": "rise",
+            "type": "constant",
+            "params": {
+              "value": 90
+            }
+          },
+          {
+            "id": "fall",
+            "type": "constant",
+            "params": {
+              "value": -2.8
+            }
+          },
+          {
+            "id": "drive",
+            "type": "logic.select"
+          },
+          {
+            "id": "press",
+            "type": "integrate",
+            "params": {
+              "initial": 0,
+              "min": 0,
+              "max": 1
+            }
+          },
+          {
+            "id": "rboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.42000000000000004
+            }
+          },
+          {
+            "id": "rout",
+            "type": "add",
+            "params": {
+              "b": 0.58
+            }
+          },
+          {
+            "id": "gboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.72
+            }
+          },
+          {
+            "id": "gout",
+            "type": "add",
+            "params": {
+              "b": 0.28
+            }
+          },
+          {
+            "id": "bboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.0
+            }
+          },
+          {
+            "id": "bout",
+            "type": "add",
+            "params": {
+              "b": 1.0
+            }
+          },
+          {
+            "id": "color",
+            "type": "sceneSetColor"
+          },
+          {
+            "id": "sxboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.12
+            }
+          },
+          {
+            "id": "sxout",
+            "type": "add",
+            "params": {
+              "b": 0.86
+            }
+          },
+          {
+            "id": "syboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.03
+            }
+          },
+          {
+            "id": "syout",
+            "type": "add",
+            "params": {
+              "b": 0.28
+            }
+          },
+          {
+            "id": "szboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.12
+            }
+          },
+          {
+            "id": "szout",
+            "type": "add",
+            "params": {
+              "b": 0.86
+            }
+          },
+          {
+            "id": "scale",
+            "type": "sceneSetScale"
+          },
+          {
+            "id": "ybump",
+            "type": "multiply",
+            "params": {
+              "b": 0.16
+            }
+          },
+          {
+            "id": "offset",
+            "type": "sceneOffsetPosition",
+            "params": {
+              "x": 0,
+              "z": 0
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "click.event",
+            "to": "clickCount.list"
+          },
+          {
+            "from": "clickCount.out",
+            "to": "clicked.value"
+          },
+          {
+            "from": "zero.out",
+            "to": "clicked.other"
+          },
+          {
+            "from": "clicked.out",
+            "to": "drive.condition"
+          },
+          {
+            "from": "rise.out",
+            "to": "drive.whenTrue"
+          },
+          {
+            "from": "fall.out",
+            "to": "drive.whenFalse"
+          },
+          {
+            "from": "drive.out",
+            "to": "press.value"
+          },
+          {
+            "from": "press.out",
+            "to": "rboost.a"
+          },
+          {
+            "from": "rboost.out",
+            "to": "rout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "gboost.a"
+          },
+          {
+            "from": "gboost.out",
+            "to": "gout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "bboost.a"
+          },
+          {
+            "from": "bboost.out",
+            "to": "bout.a"
+          },
+          {
+            "from": "rout.out",
+            "to": "color.r"
+          },
+          {
+            "from": "gout.out",
+            "to": "color.g"
+          },
+          {
+            "from": "bout.out",
+            "to": "color.b"
+          },
+          {
+            "from": "press.out",
+            "to": "sxboost.a"
+          },
+          {
+            "from": "sxboost.out",
+            "to": "sxout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "syboost.a"
+          },
+          {
+            "from": "syboost.out",
+            "to": "syout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "szboost.a"
+          },
+          {
+            "from": "szboost.out",
+            "to": "szout.a"
+          },
+          {
+            "from": "sxout.out",
+            "to": "scale.x"
+          },
+          {
+            "from": "syout.out",
+            "to": "scale.y"
+          },
+          {
+            "from": "szout.out",
+            "to": "scale.z"
+          },
+          {
+            "from": "press.out",
+            "to": "ybump.a"
+          },
+          {
+            "from": "ybump.out",
+            "to": "offset.y"
+          }
+        ]
+      },
+      "goal-ring": {
+        "nodes": [
+          {
+            "id": "clock",
+            "type": "clock"
+          },
+          {
+            "id": "pulse",
+            "type": "sine",
+            "params": {
+              "freq": 0.5,
+              "amplitude": 0.18,
+              "offset": 1.25
+            }
+          },
+          {
+            "id": "scale",
+            "type": "sceneSetScale",
+            "params": {
+              "y": 1.25,
+              "z": 1.25
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "clock.t",
+            "to": "pulse.t"
+          },
+          {
+            "from": "pulse.out",
+            "to": "scale.x"
+          }
+        ]
+      },
+      "goal-spark-1": {
+        "nodes": [
+          {
+            "id": "clock",
+            "type": "clock"
+          },
+          {
+            "id": "bob",
+            "type": "sine",
+            "params": {
+              "freq": 0.53,
+              "amplitude": 0.15,
+              "offset": 1.4100000000000001
+            }
+          },
+          {
+            "id": "pos",
+            "type": "sceneSetPosition",
+            "params": {
+              "x": -0.75,
+              "z": -2.65
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "clock.t",
+            "to": "bob.t"
+          },
+          {
+            "from": "bob.out",
+            "to": "pos.y"
+          }
+        ]
+      },
+      "goal-spark-2": {
+        "nodes": [
+          {
+            "id": "clock",
+            "type": "clock"
+          },
+          {
+            "id": "bob",
+            "type": "sine",
+            "params": {
+              "freq": 0.61,
+              "amplitude": 0.18,
+              "offset": 1.4700000000000002
+            }
+          },
+          {
+            "id": "pos",
+            "type": "sceneSetPosition",
+            "params": {
+              "x": -0.35,
+              "z": -3.45
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "clock.t",
+            "to": "bob.t"
+          },
+          {
+            "from": "bob.out",
+            "to": "pos.y"
+          }
+        ]
+      },
+      "goal-spark-3": {
+        "nodes": [
+          {
+            "id": "clock",
+            "type": "clock"
+          },
+          {
+            "id": "bob",
+            "type": "sine",
+            "params": {
+              "freq": 0.69,
+              "amplitude": 0.21,
+              "offset": 1.53
+            }
+          },
+          {
+            "id": "pos",
+            "type": "sceneSetPosition",
+            "params": {
+              "x": 0.35,
+              "z": -2.55
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "clock.t",
+            "to": "bob.t"
+          },
+          {
+            "from": "bob.out",
+            "to": "pos.y"
+          }
+        ]
+      },
+      "goal-spark-4": {
+        "nodes": [
+          {
+            "id": "clock",
+            "type": "clock"
+          },
+          {
+            "id": "bob",
+            "type": "sine",
+            "params": {
+              "freq": 0.77,
+              "amplitude": 0.24,
+              "offset": 1.59
+            }
+          },
+          {
+            "id": "pos",
+            "type": "sceneSetPosition",
+            "params": {
+              "x": 0.82,
+              "z": -3.32
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "clock.t",
+            "to": "bob.t"
+          },
+          {
+            "from": "bob.out",
+            "to": "pos.y"
+          }
+        ]
+      },
+      "button-ball-tap-pad": {
+        "nodes": [
+          {
+            "id": "click",
+            "type": "onEvent",
+            "params": {
+              "channel": "pointer.click"
+            }
+          },
+          {
+            "id": "clickCount",
+            "type": "list.length"
+          },
+          {
+            "id": "zero",
+            "type": "constant",
+            "params": {
+              "value": 0
+            }
+          },
+          {
+            "id": "clicked",
+            "type": "logic.greaterThan"
+          },
+          {
+            "id": "rise",
+            "type": "constant",
+            "params": {
+              "value": 90
+            }
+          },
+          {
+            "id": "fall",
+            "type": "constant",
+            "params": {
+              "value": -2.8
+            }
+          },
+          {
+            "id": "drive",
+            "type": "logic.select"
+          },
+          {
+            "id": "press",
+            "type": "integrate",
+            "params": {
+              "initial": 0,
+              "min": 0,
+              "max": 1
+            }
+          },
+          {
+            "id": "rboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.88
+            }
+          },
+          {
+            "id": "rout",
+            "type": "add",
+            "params": {
+              "b": 0.12
+            }
+          },
+          {
+            "id": "gboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.5800000000000001
+            }
+          },
+          {
+            "id": "gout",
+            "type": "add",
+            "params": {
+              "b": 0.42
+            }
+          },
+          {
+            "id": "bboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.0
+            }
+          },
+          {
+            "id": "bout",
+            "type": "add",
+            "params": {
+              "b": 1.0
+            }
+          },
+          {
+            "id": "color",
+            "type": "sceneSetColor"
+          },
+          {
+            "id": "sxboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.28
+            }
+          },
+          {
+            "id": "sxout",
+            "type": "add",
+            "params": {
+              "b": 1.22
+            }
+          },
+          {
+            "id": "syboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.04
+            }
+          },
+          {
+            "id": "syout",
+            "type": "add",
+            "params": {
+              "b": 0.075
+            }
+          },
+          {
+            "id": "szboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.28
+            }
+          },
+          {
+            "id": "szout",
+            "type": "add",
+            "params": {
+              "b": 1.22
+            }
+          },
+          {
+            "id": "scale",
+            "type": "sceneSetScale"
+          },
+          {
+            "id": "ybump",
+            "type": "multiply",
+            "params": {
+              "b": 0.16
+            }
+          },
+          {
+            "id": "offset",
+            "type": "sceneOffsetPosition",
+            "params": {
+              "x": 0,
+              "z": 0
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "click.event",
+            "to": "clickCount.list"
+          },
+          {
+            "from": "clickCount.out",
+            "to": "clicked.value"
+          },
+          {
+            "from": "zero.out",
+            "to": "clicked.other"
+          },
+          {
+            "from": "clicked.out",
+            "to": "drive.condition"
+          },
+          {
+            "from": "rise.out",
+            "to": "drive.whenTrue"
+          },
+          {
+            "from": "fall.out",
+            "to": "drive.whenFalse"
+          },
+          {
+            "from": "drive.out",
+            "to": "press.value"
+          },
+          {
+            "from": "press.out",
+            "to": "rboost.a"
+          },
+          {
+            "from": "rboost.out",
+            "to": "rout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "gboost.a"
+          },
+          {
+            "from": "gboost.out",
+            "to": "gout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "bboost.a"
+          },
+          {
+            "from": "bboost.out",
+            "to": "bout.a"
+          },
+          {
+            "from": "rout.out",
+            "to": "color.r"
+          },
+          {
+            "from": "gout.out",
+            "to": "color.g"
+          },
+          {
+            "from": "bout.out",
+            "to": "color.b"
+          },
+          {
+            "from": "press.out",
+            "to": "sxboost.a"
+          },
+          {
+            "from": "sxboost.out",
+            "to": "sxout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "syboost.a"
+          },
+          {
+            "from": "syboost.out",
+            "to": "syout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "szboost.a"
+          },
+          {
+            "from": "szboost.out",
+            "to": "szout.a"
+          },
+          {
+            "from": "sxout.out",
+            "to": "scale.x"
+          },
+          {
+            "from": "syout.out",
+            "to": "scale.y"
+          },
+          {
+            "from": "szout.out",
+            "to": "scale.z"
+          },
+          {
+            "from": "press.out",
+            "to": "ybump.a"
+          },
+          {
+            "from": "ybump.out",
+            "to": "offset.y"
+          }
+        ]
+      },
+      "button-ball-tap-lamp": {
+        "nodes": [
+          {
+            "id": "clock",
+            "type": "clock"
+          },
+          {
+            "id": "pulse",
+            "type": "sine",
+            "params": {
+              "freq": 0.9,
+              "amplitude": 0.32,
+              "offset": 0.55
+            }
+          },
+          {
+            "id": "rscale",
+            "type": "multiply",
+            "params": {
+              "b": 0.88
+            }
+          },
+          {
+            "id": "rout",
+            "type": "add",
+            "params": {
+              "b": 0.12
+            }
+          },
+          {
+            "id": "gscale",
+            "type": "multiply",
+            "params": {
+              "b": 0.5800000000000001
+            }
+          },
+          {
+            "id": "gout",
+            "type": "add",
+            "params": {
+              "b": 0.42
+            }
+          },
+          {
+            "id": "bscale",
+            "type": "multiply",
+            "params": {
+              "b": 0.0
+            }
+          },
+          {
+            "id": "bout",
+            "type": "add",
+            "params": {
+              "b": 1.0
+            }
+          },
+          {
+            "id": "color",
+            "type": "sceneSetColor"
+          },
+          {
+            "id": "bob",
+            "type": "sine",
+            "params": {
+              "freq": 0.7,
+              "amplitude": 0.05,
+              "offset": 1.05
+            }
+          },
+          {
+            "id": "pos",
+            "type": "sceneSetPosition",
+            "params": {
+              "x": -3.5,
+              "z": 1.64
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "clock.t",
+            "to": "pulse.t"
+          },
+          {
+            "from": "pulse.out",
+            "to": "rscale.a"
+          },
+          {
+            "from": "rscale.out",
+            "to": "rout.a"
+          },
+          {
+            "from": "rout.out",
+            "to": "color.r"
+          },
+          {
+            "from": "pulse.out",
+            "to": "gscale.a"
+          },
+          {
+            "from": "gscale.out",
+            "to": "gout.a"
+          },
+          {
+            "from": "gout.out",
+            "to": "color.g"
+          },
+          {
+            "from": "pulse.out",
+            "to": "bscale.a"
+          },
+          {
+            "from": "bscale.out",
+            "to": "bout.a"
+          },
+          {
+            "from": "bout.out",
+            "to": "color.b"
+          },
+          {
+            "from": "clock.t",
+            "to": "bob.t"
+          },
+          {
+            "from": "bob.out",
+            "to": "pos.y"
+          }
+        ]
+      },
+      "button-domino-tap-pad": {
+        "nodes": [
+          {
+            "id": "click",
+            "type": "onEvent",
+            "params": {
+              "channel": "pointer.click"
+            }
+          },
+          {
+            "id": "clickCount",
+            "type": "list.length"
+          },
+          {
+            "id": "zero",
+            "type": "constant",
+            "params": {
+              "value": 0
+            }
+          },
+          {
+            "id": "clicked",
+            "type": "logic.greaterThan"
+          },
+          {
+            "id": "rise",
+            "type": "constant",
+            "params": {
+              "value": 90
+            }
+          },
+          {
+            "id": "fall",
+            "type": "constant",
+            "params": {
+              "value": -2.8
+            }
+          },
+          {
+            "id": "drive",
+            "type": "logic.select"
+          },
+          {
+            "id": "press",
+            "type": "integrate",
+            "params": {
+              "initial": 0,
+              "min": 0,
+              "max": 1
+            }
+          },
+          {
+            "id": "rboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.0
+            }
+          },
+          {
+            "id": "rout",
+            "type": "add",
+            "params": {
+              "b": 1.0
+            }
+          },
+          {
+            "id": "gboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.43999999999999995
+            }
+          },
+          {
+            "id": "gout",
+            "type": "add",
+            "params": {
+              "b": 0.56
+            }
+          },
+          {
+            "id": "bboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.86
+            }
+          },
+          {
+            "id": "bout",
+            "type": "add",
+            "params": {
+              "b": 0.14
+            }
+          },
+          {
+            "id": "color",
+            "type": "sceneSetColor"
+          },
+          {
+            "id": "sxboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.28
+            }
+          },
+          {
+            "id": "sxout",
+            "type": "add",
+            "params": {
+              "b": 1.22
+            }
+          },
+          {
+            "id": "syboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.04
+            }
+          },
+          {
+            "id": "syout",
+            "type": "add",
+            "params": {
+              "b": 0.075
+            }
+          },
+          {
+            "id": "szboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.28
+            }
+          },
+          {
+            "id": "szout",
+            "type": "add",
+            "params": {
+              "b": 1.22
+            }
+          },
+          {
+            "id": "scale",
+            "type": "sceneSetScale"
+          },
+          {
+            "id": "ybump",
+            "type": "multiply",
+            "params": {
+              "b": 0.16
+            }
+          },
+          {
+            "id": "offset",
+            "type": "sceneOffsetPosition",
+            "params": {
+              "x": 0,
+              "z": 0
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "click.event",
+            "to": "clickCount.list"
+          },
+          {
+            "from": "clickCount.out",
+            "to": "clicked.value"
+          },
+          {
+            "from": "zero.out",
+            "to": "clicked.other"
+          },
+          {
+            "from": "clicked.out",
+            "to": "drive.condition"
+          },
+          {
+            "from": "rise.out",
+            "to": "drive.whenTrue"
+          },
+          {
+            "from": "fall.out",
+            "to": "drive.whenFalse"
+          },
+          {
+            "from": "drive.out",
+            "to": "press.value"
+          },
+          {
+            "from": "press.out",
+            "to": "rboost.a"
+          },
+          {
+            "from": "rboost.out",
+            "to": "rout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "gboost.a"
+          },
+          {
+            "from": "gboost.out",
+            "to": "gout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "bboost.a"
+          },
+          {
+            "from": "bboost.out",
+            "to": "bout.a"
+          },
+          {
+            "from": "rout.out",
+            "to": "color.r"
+          },
+          {
+            "from": "gout.out",
+            "to": "color.g"
+          },
+          {
+            "from": "bout.out",
+            "to": "color.b"
+          },
+          {
+            "from": "press.out",
+            "to": "sxboost.a"
+          },
+          {
+            "from": "sxboost.out",
+            "to": "sxout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "syboost.a"
+          },
+          {
+            "from": "syboost.out",
+            "to": "syout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "szboost.a"
+          },
+          {
+            "from": "szboost.out",
+            "to": "szout.a"
+          },
+          {
+            "from": "sxout.out",
+            "to": "scale.x"
+          },
+          {
+            "from": "syout.out",
+            "to": "scale.y"
+          },
+          {
+            "from": "szout.out",
+            "to": "scale.z"
+          },
+          {
+            "from": "press.out",
+            "to": "ybump.a"
+          },
+          {
+            "from": "ybump.out",
+            "to": "offset.y"
+          }
+        ]
+      },
+      "button-domino-tap-lamp": {
+        "nodes": [
+          {
+            "id": "clock",
+            "type": "clock"
+          },
+          {
+            "id": "pulse",
+            "type": "sine",
+            "params": {
+              "freq": 0.9,
+              "amplitude": 0.32,
+              "offset": 0.55
+            }
+          },
+          {
+            "id": "rscale",
+            "type": "multiply",
+            "params": {
+              "b": 0.0
+            }
+          },
+          {
+            "id": "rout",
+            "type": "add",
+            "params": {
+              "b": 1.0
+            }
+          },
+          {
+            "id": "gscale",
+            "type": "multiply",
+            "params": {
+              "b": 0.43999999999999995
+            }
+          },
+          {
+            "id": "gout",
+            "type": "add",
+            "params": {
+              "b": 0.56
+            }
+          },
+          {
+            "id": "bscale",
+            "type": "multiply",
+            "params": {
+              "b": 0.86
+            }
+          },
+          {
+            "id": "bout",
+            "type": "add",
+            "params": {
+              "b": 0.14
+            }
+          },
+          {
+            "id": "color",
+            "type": "sceneSetColor"
+          },
+          {
+            "id": "bob",
+            "type": "sine",
+            "params": {
+              "freq": 0.7,
+              "amplitude": 0.05,
+              "offset": 1.05
+            }
+          },
+          {
+            "id": "pos",
+            "type": "sceneSetPosition",
+            "params": {
+              "x": 0.0,
+              "z": 1.64
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "clock.t",
+            "to": "pulse.t"
+          },
+          {
+            "from": "pulse.out",
+            "to": "rscale.a"
+          },
+          {
+            "from": "rscale.out",
+            "to": "rout.a"
+          },
+          {
+            "from": "rout.out",
+            "to": "color.r"
+          },
+          {
+            "from": "pulse.out",
+            "to": "gscale.a"
+          },
+          {
+            "from": "gscale.out",
+            "to": "gout.a"
+          },
+          {
+            "from": "gout.out",
+            "to": "color.g"
+          },
+          {
+            "from": "pulse.out",
+            "to": "bscale.a"
+          },
+          {
+            "from": "bscale.out",
+            "to": "bout.a"
+          },
+          {
+            "from": "bout.out",
+            "to": "color.b"
+          },
+          {
+            "from": "clock.t",
+            "to": "bob.t"
+          },
+          {
+            "from": "bob.out",
+            "to": "pos.y"
+          }
+        ]
+      },
+      "button-gravity-tap-pad": {
+        "nodes": [
+          {
+            "id": "click",
+            "type": "onEvent",
+            "params": {
+              "channel": "pointer.click"
+            }
+          },
+          {
+            "id": "clickCount",
+            "type": "list.length"
+          },
+          {
+            "id": "zero",
+            "type": "constant",
+            "params": {
+              "value": 0
+            }
+          },
+          {
+            "id": "clicked",
+            "type": "logic.greaterThan"
+          },
+          {
+            "id": "rise",
+            "type": "constant",
+            "params": {
+              "value": 90
+            }
+          },
+          {
+            "id": "fall",
+            "type": "constant",
+            "params": {
+              "value": -2.8
+            }
+          },
+          {
+            "id": "drive",
+            "type": "logic.select"
+          },
+          {
+            "id": "press",
+            "type": "integrate",
+            "params": {
+              "initial": 0,
+              "min": 0,
+              "max": 1
+            }
+          },
+          {
+            "id": "rboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.42000000000000004
+            }
+          },
+          {
+            "id": "rout",
+            "type": "add",
+            "params": {
+              "b": 0.58
+            }
+          },
+          {
+            "id": "gboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.72
+            }
+          },
+          {
+            "id": "gout",
+            "type": "add",
+            "params": {
+              "b": 0.28
+            }
+          },
+          {
+            "id": "bboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.0
+            }
+          },
+          {
+            "id": "bout",
+            "type": "add",
+            "params": {
+              "b": 1.0
+            }
+          },
+          {
+            "id": "color",
+            "type": "sceneSetColor"
+          },
+          {
+            "id": "sxboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.28
+            }
+          },
+          {
+            "id": "sxout",
+            "type": "add",
+            "params": {
+              "b": 1.22
+            }
+          },
+          {
+            "id": "syboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.04
+            }
+          },
+          {
+            "id": "syout",
+            "type": "add",
+            "params": {
+              "b": 0.075
+            }
+          },
+          {
+            "id": "szboost",
+            "type": "multiply",
+            "params": {
+              "b": 0.28
+            }
+          },
+          {
+            "id": "szout",
+            "type": "add",
+            "params": {
+              "b": 1.22
+            }
+          },
+          {
+            "id": "scale",
+            "type": "sceneSetScale"
+          },
+          {
+            "id": "ybump",
+            "type": "multiply",
+            "params": {
+              "b": 0.16
+            }
+          },
+          {
+            "id": "offset",
+            "type": "sceneOffsetPosition",
+            "params": {
+              "x": 0,
+              "z": 0
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "click.event",
+            "to": "clickCount.list"
+          },
+          {
+            "from": "clickCount.out",
+            "to": "clicked.value"
+          },
+          {
+            "from": "zero.out",
+            "to": "clicked.other"
+          },
+          {
+            "from": "clicked.out",
+            "to": "drive.condition"
+          },
+          {
+            "from": "rise.out",
+            "to": "drive.whenTrue"
+          },
+          {
+            "from": "fall.out",
+            "to": "drive.whenFalse"
+          },
+          {
+            "from": "drive.out",
+            "to": "press.value"
+          },
+          {
+            "from": "press.out",
+            "to": "rboost.a"
+          },
+          {
+            "from": "rboost.out",
+            "to": "rout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "gboost.a"
+          },
+          {
+            "from": "gboost.out",
+            "to": "gout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "bboost.a"
+          },
+          {
+            "from": "bboost.out",
+            "to": "bout.a"
+          },
+          {
+            "from": "rout.out",
+            "to": "color.r"
+          },
+          {
+            "from": "gout.out",
+            "to": "color.g"
+          },
+          {
+            "from": "bout.out",
+            "to": "color.b"
+          },
+          {
+            "from": "press.out",
+            "to": "sxboost.a"
+          },
+          {
+            "from": "sxboost.out",
+            "to": "sxout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "syboost.a"
+          },
+          {
+            "from": "syboost.out",
+            "to": "syout.a"
+          },
+          {
+            "from": "press.out",
+            "to": "szboost.a"
+          },
+          {
+            "from": "szboost.out",
+            "to": "szout.a"
+          },
+          {
+            "from": "sxout.out",
+            "to": "scale.x"
+          },
+          {
+            "from": "syout.out",
+            "to": "scale.y"
+          },
+          {
+            "from": "szout.out",
+            "to": "scale.z"
+          },
+          {
+            "from": "press.out",
+            "to": "ybump.a"
+          },
+          {
+            "from": "ybump.out",
+            "to": "offset.y"
+          }
+        ]
+      },
+      "button-gravity-tap-lamp": {
+        "nodes": [
+          {
+            "id": "clock",
+            "type": "clock"
+          },
+          {
+            "id": "pulse",
+            "type": "sine",
+            "params": {
+              "freq": 0.9,
+              "amplitude": 0.32,
+              "offset": 0.55
+            }
+          },
+          {
+            "id": "rscale",
+            "type": "multiply",
+            "params": {
+              "b": 0.42000000000000004
+            }
+          },
+          {
+            "id": "rout",
+            "type": "add",
+            "params": {
+              "b": 0.58
+            }
+          },
+          {
+            "id": "gscale",
+            "type": "multiply",
+            "params": {
+              "b": 0.72
+            }
+          },
+          {
+            "id": "gout",
+            "type": "add",
+            "params": {
+              "b": 0.28
+            }
+          },
+          {
+            "id": "bscale",
+            "type": "multiply",
+            "params": {
+              "b": 0.0
+            }
+          },
+          {
+            "id": "bout",
+            "type": "add",
+            "params": {
+              "b": 1.0
+            }
+          },
+          {
+            "id": "color",
+            "type": "sceneSetColor"
+          },
+          {
+            "id": "bob",
+            "type": "sine",
+            "params": {
+              "freq": 0.7,
+              "amplitude": 0.05,
+              "offset": 1.05
+            }
+          },
+          {
+            "id": "pos",
+            "type": "sceneSetPosition",
+            "params": {
+              "x": 3.5,
+              "z": 1.64
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "clock.t",
+            "to": "pulse.t"
+          },
+          {
+            "from": "pulse.out",
+            "to": "rscale.a"
+          },
+          {
+            "from": "rscale.out",
+            "to": "rout.a"
+          },
+          {
+            "from": "rout.out",
+            "to": "color.r"
+          },
+          {
+            "from": "pulse.out",
+            "to": "gscale.a"
+          },
+          {
+            "from": "gscale.out",
+            "to": "gout.a"
+          },
+          {
+            "from": "gout.out",
+            "to": "color.g"
+          },
+          {
+            "from": "pulse.out",
+            "to": "bscale.a"
+          },
+          {
+            "from": "bscale.out",
+            "to": "bout.a"
+          },
+          {
+            "from": "bout.out",
+            "to": "color.b"
+          },
+          {
+            "from": "clock.t",
+            "to": "bob.t"
+          },
+          {
+            "from": "bob.out",
+            "to": "pos.y"
+          }
+        ]
+      }
+    }
+  },
+  "physics": {
+    "version": 1,
+    "enabled": true,
+    "duration": 18,
+    "worldOptions": {
+      "gravity": [
+        0,
+        -9.81,
+        0
+      ],
+      "ground": {
+        "y": -0.1,
+        "restitution": 0.2,
+        "friction": 0.8
+      },
+      "timestep": 0.016666666666666666
+    }
+  }
+}
