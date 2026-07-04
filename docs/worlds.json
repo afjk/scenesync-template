@@ -1,33 +1,7 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-06-26T14:30:34.457Z",
+  "updatedAt": "2026-07-04T07:09:11.000Z",
   "worlds": [
-    {
-      "schemaVersion": 1,
-      "slug": "scenesync-physics-toy-box-tap",
-      "title": "Physics Toy Box: Tap + Push Buttons",
-      "description": "Player Shellで遊ぶScene Sync物理おもちゃ。指/マウスのタップで光るTAPパッドを追加し、押せているか分かるようにした版。物理ボタン、Ball Drop、Domino、Gravity Toy、Goal演出を含む。",
-      "tags": [
-        "Scene Sync",
-        "Rapier",
-        "Loomlet",
-        "Physics",
-        "Toy",
-        "Player Shell",
-        "Tap"
-      ],
-      "updatedAt": "2026-06-26T14:30:34.457Z",
-      "versionId": "20260626T143034Z-dbb32382",
-      "path": "worlds/scenesync-physics-toy-box-tap/",
-      "versionPath": "worlds/scenesync-physics-toy-box-tap/versions/20260626T143034Z-dbb32382/",
-      "thumbnail": "worlds/scenesync-physics-toy-box-tap/versions/20260626T143034Z-dbb32382/thumbnail.png",
-      "objectCount": 63,
-      "assetCount": 0,
-      "zipSize": 17370,
-      "expandedSize": 114343,
-      "zipSha256": "dbb32382aa6eebaa2f86b67e7bbab9c6d8f30029544e58108db31c5954b4f807",
-      "warnings": []
-    },
     {
       "schemaVersion": 1,
       "slug": "domino",
